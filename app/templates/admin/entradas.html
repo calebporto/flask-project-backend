@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/static/css/entradas.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <title>Igreja Batista Village Guaxindiba - Entrar</title>
+</head>
+<body>
+    <div class="header">
+        <div class="container container-header">
+            <div class="logo">
+                <a href="/home"><img class="img" src="/static/media/painel/logo.png" alt=""></a>
+            </div>
+            <div class="title">
+                <a href="/painel-administrativo">
+                    <p>Painel Administrativo</p>
+                </a>
+            </div>
+            <div class="button">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-light dropdown-toggle button-top btn-sm" data-bs-toggle="dropdown" aria-expanded="false">
+                        {{ ((current_user.name).strip().split(' ')[0]).title() }}
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-lg-start">
+                        <li><a class="dropdown-item p-2" href="/painel">Painel do Membro</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item p-2" href="/logout">Sair</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="voltar">
+        <div class="container-voltar">
+            <a href="/painel-administrativo/">
+                <button class="voltar_button">Voltar</button>
+            </a>
+        </div>
+    </div>
+    <div class="meusdados">
+        <div class="container dados">
+            {% set message = get_flashed_messages()[0] %}
+            {% if message %}
+            <div class="alert">{{ message }}</div>
+            {% endif %}
+            <div class="data-title">
+                <p>Registrar Entradas</p>
+            </div>
+            <div class="registrar-oferta">
+                <div class="oferta-title">
+                    <p>Registrar Oferta</p>
+                </div>
+                <div class="oferta-content">
+                    <div class="data">
+                        <label for="data">Data:</label>
+                        <input type="text" name="data" id="oferta-data">
+                    </div>
+                    <div class="valor">
+                        <label for="valor">Valor:   R$</label>
+                        <input type="text" name="valor" id="oferta-valor">
+                    </div>
+                    <div class="registrar-button">
+                        <button id="oferta-button">Adicionar</button>
+                    </div>
+                </div>
+            </div>
+            <div class="registrar-oferta">
+                <div class="oferta-title">
+                    <p>Registrar Dízimo</p>
+                </div>
+                <div class="select">
+                    <select name="select" id="select-nome">
+                        <option value="" disabled selected>-- Selecione um membro --</option>
+                        {% for user in userlist %}
+                        <option value="{{ user.id }}">{{ user.name.title() }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="oferta-content">
+                    <div class="data">
+                        <label for="data">Data:</label>
+                        <input type="text" name="data" id="dizimo-data">
+                    </div>
+                    <div class="valor">
+                        <label for="valor">Valor: R$</label>
+                        <input type="text" name="valor" id="dizimo-valor">
+                    </div>
+                    <div class="registrar-button">
+                        <button id="dizimo-button">Adicionar</button>
+                    </div>
+                </div>
+            </div>
+            <div class="registrar-oferta" id="registrar-oferta">
+                <div class="oferta-title">
+                    <p>Confira os dados abaixo. Se estiverem corretos, clique em Confirmar</p>
+                </div>
+                <div class="registrar-oferta-content" id="registrar-oferta-content">
+                    
+                </div>
+                <div class="confirmar">
+                    <div class="total">
+                        <span class="key">Total</span>
+                        <span class="value" id="total_entradas">R$ 0,00</span>
+                    </div>
+                    <div class="form-button">
+                        <form action="/painel-administrativo/entradas" method="post">
+                            <input type="hidden" name="treasurer_id" value="{{ current_user.id }}">
+                            <input type="hidden" name="json" id="form-input" value="">
+                            
+                            <button class="confirmar-button" type="button" data-bs-toggle="modal" data-bs-target="#confirmar">Confirmar</button>
+                            <div class="modal fade" id="confirmar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">Tem certeza?</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Após a confirmação não é possível excluir os dados inseridos.
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                            <button type="submit" class="btn btn-danger">Confirmar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+    <div class="rodape">
+        <div class="redes-sociais">
+            <div class="container h-100">
+                <a href="https://www.instagram.com/ibvg.10/" target="_blank" rel="noopener noreferrer">
+                    <img class="insta-logo" src="/static/media/index/instagram.png" alt="">
+                </a>
+            </div>
+        </div>
+        <div class="rodape-divisor">
+            <div class="rodape-text">
+                <p class="rodape-text1">Desenvolvimento e Design:</p>
+                <p class="rodape-text2">Porto Solutions &copy;</p>
+                <p class="rodape-text1">(22) 999248349</p>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.mask.min.js"></script>
+    <script type="text/javascript">
+        
+        var oferta_index = 0;
+        var entrada_list = {};
+        function remove_item(index) {
+                $('#item-table'+ index +'').remove();
+                delete entrada_list['entrada'+ index +''];
+                total_entradas(entrada_list);
+                $('#form-input').val(JSON.stringify(entrada_list));
+        }
+        
+        function total_entradas(entrada_list) {
+            var total = 0;
+            for (var entrada in entrada_list) {
+                total += entrada_list[entrada].valor;
+            }
+            $('#total_entradas').text(total.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'}));
+        }
+        $(document).ready(function() {
+            var data = new Date();
+            var dia = String(data.getDate()).padStart(2, '0');
+            var mes = String(data.getMonth() + 1).padStart(2, '0');
+            var ano = data.getFullYear();
+            dataAtual = dia + '/' + mes + '/' + ano;
+            $('#oferta-data').val(dataAtual);
+            $('#dizimo-data').val(dataAtual);
+
+            function adicionar_oferta() {
+                let data = $('#oferta-data').val();
+                let valor_inicial = $('#oferta-valor').val();
+                let valor = valor_inicial.replace(".", "");
+                let valorFloat = parseFloat(valor.replace(",", "."));
+                
+                if (data && valor) {
+                    if (valorFloat > 0) {
+                        $('#registrar-oferta-content').append('<div class="item-table entrada'+ oferta_index +'" id="item-table'+ oferta_index +'">')
+                        $('#item-table'+ oferta_index +'').append('<div class="item-content" id="item-content'+ oferta_index +'">')
+                        $('#item-content'+ oferta_index +'').append('<div class="tipo-table">Oferta</div>')
+                        $('#item-content'+ oferta_index +'').append('<div class="data-table">'+ data +'</div>')
+                        $('#item-content'+ oferta_index +'').append('<div class="valor-table">R$ '+ valor_inicial +'</div>')
+                        $('#item-table'+ oferta_index +'').append('</div>')
+                        $('#item-table'+ oferta_index +'').append('<div class="item-button" id="item-button'+ oferta_index +'">')
+                        $('#item-button'+ oferta_index +'').append('<button id="'+ oferta_index +'" onclick="remove_item(this.id)">x</button>')
+                        $('#item-table'+ oferta_index +'').append('</div>')
+                        $('#registrar-oferta-content').append('</div>')
+                        
+                        entrada_list['entrada'+ oferta_index +''] = {
+                            'tipo': 'oferta',
+                            'data': data,
+                            'valor': valorFloat
+                        }
+                        total_entradas(entrada_list);
+                        $('#form-input').val(JSON.stringify(entrada_list));
+                        oferta_index += 1;
+                    } else {
+                        alert('Preencha os campos corretamente!')
+                    }
+                    
+                } else {
+                    alert('Preencha os campos corretamente!')
+                }
+                
+            }
+            function adicionar_dizimo() {
+                let data = $('#dizimo-data').val();
+                let valor_inicial = $('#dizimo-valor').val();
+                let valor = valor_inicial.replace(".", "");
+                let valorFloat = parseFloat(valor.replace(",", "."));
+                let nome = $('#select-nome option:selected').text();
+                let id = parseInt($('#select-nome').val());
+
+                if (data && valor && nome && id) {
+                    if(valorFloat > 0) {
+                        $('#registrar-oferta-content').append('<div class="item-table" id="item-table'+ oferta_index +'">')
+                        $('#item-table'+ oferta_index +'').append('<div class="item-content" id="item-content'+ oferta_index +'">')
+                        $('#item-content'+ oferta_index +'').append('<div class="tipo-table">Dízimo</div>')
+                        $('#item-content'+ oferta_index +'').append('<div class="data-table">'+ data +'</div>')
+                        $('#item-content'+ oferta_index +'').append('<div class="valor-table">R$ '+ valor_inicial +'</div>')
+                        $('#item-content'+ oferta_index +'').append('<div class="nome-table">'+ nome +'</div>')
+                        $('#item-table'+ oferta_index +'').append('</div>')
+                        $('#item-table'+ oferta_index +'').append('<div class="item-button" id="item-button'+ oferta_index +'">')
+                        $('#item-button'+ oferta_index +'').append('<button id="'+ oferta_index +'" onclick="remove_item(this.id)">x</button>')
+                        $('#item-table'+ oferta_index +'').append('</div>')
+                        $('#registrar-oferta-content').append('</div>')
+
+                        entrada_list['entrada'+ oferta_index +''] = {
+                            'tipo': 'dizimo',
+                            'data': data,
+                            'valor': valorFloat,
+                            'id': id
+                        }
+                        total_entradas(entrada_list);
+                        $('#form-input').val(JSON.stringify(entrada_list));
+                        oferta_index += 1;
+                    } else {
+                        alert('Preencha os campos corretamente!')
+                    }
+                    
+                } else {
+                    alert('Preencha os campos corretamente!')
+                }
+                
+            }
+            
+            $('#oferta-button').on('click', function() {
+                adicionar_oferta();
+                $('#oferta-data').val(dataAtual);
+                $('#oferta-valor').val('');
+            })
+            $('#dizimo-button').on('click', function() {
+                adicionar_dizimo();
+                $('#dizimo-data').val(dataAtual);
+                $('#dizimo-valor').val('');
+                $('#select-nome').val('');
+            })
+            
+        })
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#oferta-data').mask('00/00/0000')
+            $('#oferta-valor').mask('#.##0,00', {reverse: true})
+            $('#dizimo-data').mask('00/00/0000')
+            $('#dizimo-valor').mask('#.##0,00', {reverse: true})
+        })
+    </script>
+</body>
+</html>

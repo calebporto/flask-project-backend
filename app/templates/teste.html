@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>Teste</title>
+</head>
+<body>
+    <div class="teste">
+        <p id="texto">Caléb</p>
+        <input type="text" name="data" id="data">
+        <button id="teste" onclick="teste(this.id)">clicar</button>
+    </div>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+    <script type="text/javascript">
+        function teste(id) {
+                console.log(id)
+                $('#texto').text('Elaine');
+            }
+        $(document).ready(function() {
+            data = $('#data').val();
+            console.log(data[3:4])
+        })
+    </script>
+</body>
+</html>

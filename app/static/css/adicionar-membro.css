@@ -1,0 +1,319 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@100;200;300;400;500;600;700;800;900&display=swap');
+* {
+    padding: 0;
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    box-sizing: border-box;
+}
+.header {
+    background: linear-gradient(rgb(82, 8, 8), black);
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    height: 100px;
+    margin-top: 10px;
+    -webkit-box-shadow: 0px 7px 5px rgba(50, 50, 50, 0.77);
+    -moz-box-shadow:    0px 7px 5px rgba(50, 50, 50, 0.77);
+    box-shadow:         0px 7px 5px rgba(50, 50, 50, 0.77);
+}
+.container-header {
+    display: flex;
+    justify-content: space-between;
+    margin-left: auto;
+    margin-right: auto;
+}
+.logo {
+    width: 25%;
+    height: 100%;
+    display: flex;
+    justify-content: flex-start;
+    text-align: center;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+.img {
+    height: 100%;
+    width: auto;
+}
+.title {
+    font-family: 'League Spartan', sans-serif;
+    font-size: 40px;
+    font-weight: bold;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    color: white;
+    width: 50%;
+    height: 100%;
+}
+.title a {
+    text-decoration: none;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    color: white;
+    cursor: pointer;
+}
+.title a:hover {
+    color: white;
+}
+.title p {
+    margin: auto;
+}
+.button {
+    height: 100%;
+    width: 25%;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    display: flex;
+    justify-content: flex-end;
+    text-align: center;
+}
+.voltar {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+}
+.container-voltar {
+    width: 60%;
+    display: flex;
+    justify-content: flex-start;
+}
+.container-voltar a {
+    width: 20%;
+}
+.container-voltar button {
+    border-radius: 5px;
+    width: 100%;
+    border: none;
+    color: white;
+    background: linear-gradient(rgb(82, 8, 8), black);
+    cursor: pointer;
+    box-shadow: 0px 3px 2px rgb(59, 41, 41);
+}
+.container-voltar button:hover {
+    background: linear-gradient(rgb(187, 21, 21), rgb(41, 41, 41));
+}
+.container-voltar button:active {
+    box-shadow: 0px 1px 2px rgb(59, 41, 41);
+    position: relative;
+    top: 2px;
+}
+.login-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.form-box {
+    margin-top: 5%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 70%;
+    height: auto;
+    border-radius: 20px;
+    border: 2px solid black;
+    box-shadow: 0px 7px 8px rgba(50, 50, 50, 0.77);
+    padding: 30px;
+}
+.form-box form {
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+    height: auto;
+}
+.form-box input {
+    margin-top: 20px;
+}
+.form-box button {
+    margin-top: 35px;
+    margin-bottom: 35px;
+    font-weight: bold;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(rgb(219, 243, 112), rgb(133, 131, 0));
+    box-shadow: 0px 3px 2px rgb(59, 41, 41);
+    color: black;
+}
+.form-box button:hover {
+    background: linear-gradient(rgb(201, 235, 50), rgb(133, 131, 0));
+}
+.form-box button:active {
+    box-shadow: 0px 1px 2px rgb(59, 41, 41);
+    position: relative;
+    top: 2px;
+}
+.logo-title {
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    width: 40%;
+    height: auto;
+    font-size: 30px;
+    font-weight: bold;
+    margin: auto;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    background: linear-gradient(rgb(82, 8, 8), black);
+    color: white;
+    padding: 10px;
+}
+.logo-title p {
+    margin: auto;
+}
+.form-item {
+    margin-top: 5px;
+    display: flex;
+    justify-content: space-between;
+    text-align: center;
+    width: 100%;
+}
+.form-input {
+    display: flex;
+    flex-direction: column;
+    text-align: start;
+}
+.form-input label {
+    margin: 0;
+    font-weight: bold;
+}
+.form-input input {
+    margin-top: 2px;
+    padding: 3px;
+}
+.radio-item {
+    display: flex;
+    justify-content: space-between;
+    text-align: center;
+    width: 100%;
+}
+.input-radio {
+    display: flex;
+    justify-content: space-around;
+    text-align: center;
+    margin-right: 2px;
+    width: 45%;
+}
+.input-radio label {
+    font-weight: normal;
+}
+.form-item.senha {
+    margin-top: 35px;
+}
+.input-rule {
+    font-size: small;
+}
+.nome, .email, .form-input.senha, .senha2, .cidade, .logradouro, .cep {
+    width: 48%;
+}
+.nascimento, .sexo {
+    width: 22%;
+}
+.numero, .uf {
+    width: 12%;
+}
+.bairro, .telefone {
+    width: 32%;
+}
+.message {
+    color: black;
+    background-color: yellow;
+    padding: 5px;
+}
+.rodape {
+    background-color: rgb(102, 31, 31);
+    height: 15rem;
+    margin-top: 50px;
+    padding-bottom: 3rem;
+}
+.redes-sociais {
+    height: 40%;
+    background-color: rgba(255, 255, 255, 0.192);
+}
+.container.h-100 {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    padding: 4px;
+}
+.insta-logo {
+    height: 100%;
+    width: auto;
+}
+.rodape-text {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    flex-wrap: wrap;
+}
+.rodape-text1 {
+    width: 100%;
+    margin-bottom: 0;
+    color: white;
+    position: relative;
+    top: 100%;
+    transform: translateY(100%); 
+}
+.rodape-text2 {
+    width: 100%;
+    color: white;
+    font-weight: bold;
+    position: relative;
+    top: 100%;
+    transform: translateY(100%); 
+}
+
+@media (max-width: 768px) {
+    .title {
+        font-size: 16px;
+    }
+    .container-voltar {
+        width: 90%;
+    }
+    .container-voltar button:hover {
+        background: linear-gradient(rgb(82, 8, 8), black);
+    }
+    .login-box {
+        height: auto;
+    }
+    .form-box {
+        margin-top: 5%;
+        width: 90%;
+        height: auto;
+    }
+    .form-box form {
+        width: 100%;
+    }
+    .logo-title {
+        width: 90%;
+        font-size: 20px;
+    }
+    .form-item {
+        flex-wrap: wrap;
+    }
+    .form-input {
+        margin-top: 10px;
+    }
+    .nome, .email, .bairro, .cidade, .form-input.senha, .senha2, .logradouro, .cep, .nascimento {
+        width: 100%;
+    }
+    .sexo {
+        width: 80%;
+    }
+    .telefone {
+        width: 78%;
+    }
+    .uf, .numero {
+        width: 20%;
+    }
+    .form-box button:hover {
+        background: linear-gradient(rgb(219, 243, 112), rgb(133, 131, 0));
+    }
+}

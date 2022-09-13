@@ -1,0 +1,179 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+* {
+    padding: 0;
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+}
+body {
+    background-image: url(/static/media/index/background.png);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position-y: center;
+    background-position-x: center;
+}
+/*.banner-image {
+    background-image: url(/static/media/index/background.png);
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}*/
+.navbar-custom {
+    background-color: rgba(0, 0, 0, 0.4);
+}
+div.container-menu, .menu {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
+.nav-item {
+    margin-left: 20px;
+    margin-right: 20px;
+}
+.nav-link.text-white:hover {
+    background-color: rgb(161, 1, 1);
+    border-radius: 10px;
+}
+.active {
+    font-weight: bold;
+    border-bottom: 3px solid rgb(131, 1, 1);
+}
+.fume {
+    background-color: rgba(0, 0, 0, 0.4);
+}
+.login-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.form-box {
+    margin-top: 10%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.815);
+    width: 70%;
+    height: auto;
+    border-radius: 20px;
+    padding: 30px;
+}
+.form-box form {
+    color: white;
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+    height: auto;
+}
+.form-box input {
+    margin-top: 20px;
+}
+.form-box button {
+    margin-top: 35px;
+    margin-bottom: 35px;
+    font-weight: bold;
+    padding: 10px;
+    border-radius: 10px;
+    border-color: white;
+    background-color: rgb(85, 0, 0);
+    color: white;
+}
+.logo-title {
+    font-size: 30px;
+    font-weight: bold;
+    color: white;
+}
+.form-item {
+    margin-top: 5px;
+    display: flex;
+    justify-content: space-between;
+    text-align: center;
+    width: 100%;
+}
+.form-input {
+    display: flex;
+    flex-direction: column;
+    text-align: start;
+}
+.form-input label {
+    margin: 0;
+}
+.form-input input {
+    margin-top: 2px;
+    padding: 3px;
+}
+.radio-item {
+    display: flex;
+    justify-content: space-between;
+    text-align: center;
+    width: 100%;
+}
+.input-radio {
+    display: flex;
+    justify-content: space-around;
+    text-align: center;
+    margin-right: 2px;
+    width: 45%;
+}
+.form-item.senha {
+    margin-top: 35px;
+}
+.input-rule {
+    font-size: small;
+}
+.nome, .email, .form-input.senha, .senha2, .cidade, .logradouro, .cep {
+    width: 48%;
+}
+.nascimento, .sexo {
+    width: 22%;
+}
+.numero, .uf {
+    width: 12%;
+}
+.bairro, .telefone {
+    width: 32%;
+}
+.message {
+    color: black;
+    background-color: yellow;
+    padding: 5px;
+}
+
+@media (max-width: 768px) {
+    body {
+        background-image: url(/static/media/index/background-768px.png);
+    }
+    .nav-link.text-white {
+        font-size: small;
+    }
+    .login-box {
+        height: auto;
+    }
+    .form-box {
+        margin-top: 150px;
+        width: 90%;
+        height: auto;
+    }
+    .form-box form {
+        width: 100%;
+    }
+    .form-item {
+        flex-wrap: wrap;
+    }
+    .form-input {
+        margin-top: 10px;
+    }
+    .nome, .email, .bairro, .cidade, .form-input.senha, .senha2, .logradouro, .cep, .nascimento {
+        width: 100%;
+    }
+    .sexo {
+        width: 80%;
+    }
+    .telefone {
+        width: 78%;
+    }
+    .uf, .numero {
+        width: 20%;
+    }
+}

@@ -1,0 +1,113 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+* {
+    padding: 0;
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+}
+body, .container-carousel {
+    background-color: rgb(51, 16, 16);
+}
+.banner-image {
+    background-image: url(/static/media/index/background.png);
+    background-size: cover;
+    background-position: center;
+}
+.navbar-custom {
+    background-color: rgba(0, 0, 0, 0.4);
+}
+div.container, .menu {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
+.nav-item {
+    margin-left: 20px;
+    margin-right: 20px;
+}
+.nav-link.text-white:hover {
+    background-color: rgb(161, 1, 1);
+    border-radius: 10px;
+}
+.active {
+    font-weight: bold;
+    border-bottom: 3px solid rgb(131, 1, 1);
+}
+.sobre-nos {
+    margin-top: 40px;
+}
+.title-h1 {
+    width: 100%;
+    justify-content: left;
+    text-align: start;
+    border-bottom: 3px solid black;
+}
+.fume {
+    background-color: rgba(0, 0, 0, 0.4);
+}
+.lead {
+    text-align: left;
+}
+.lead.mt-3.text {
+    width: 100%;
+}
+.carousel-div {
+    width: 100%;
+    margin: 0;
+    padding: 20px;
+}
+.rodape {
+    background-color: rgb(102, 31, 31);
+    height: 200px;
+    margin-top: 30px;
+}
+.redes-sociais {
+    height: 40%;
+    background-color: rgba(255, 255, 255, 0.192);
+}
+.logo {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%); 
+}
+.rodape-text {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    flex-wrap: wrap;
+}
+.rodape-text1 {
+    width: 100%;
+    margin-bottom: 0;
+    color: white;
+    position: relative;
+    top: 100%;
+    transform: translateY(100%); 
+}
+.rodape-text2 {
+    width: 100%;
+    color: white;
+    font-weight: bold;
+    position: relative;
+    top: 100%;
+    transform: translateY(100%); 
+}
+.container-carousel {
+    border-top: 5px dotted rgb(255, 255, 255);
+    border-bottom:5px dotted rgb(255, 255, 255);;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+.carousel-title {
+    margin-top: 25px;
+    margin-bottom: 25px;
+    color: white;
+    font-weight: bold;
+}
+@media (max-width: 768px) {
+    .banner-image {
+        background-image: url(/static/media/index/background-768px.png);
+    }
+    .nav-link.text-white {
+        font-size: small;
+    }
+}
