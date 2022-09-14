@@ -185,10 +185,27 @@ def historico_de_dizimos():
         return render_template('client/entrar.html')
     except:
         return 'Erro Inesperado'
-    
-    current_month_days = date.today().day
-    response = requests.get(f'{API_URL}/tithe-list/{current_month_days}/{-1}/1')
-    
+
+    periodo_select = '-- Mês atual --'
+
+    if request.args.get('time'):
+        tithe_time = int(request.args.get('time'))
+        response = requests.get(f'{API_URL}/tithe-list/{tithe_time}/{-1}/1')
+        print(tithe_time)
+        match tithe_time:
+            case 30:
+                periodo_select = '-- 30 dias --'
+            case 60:
+                periodo_select = '-- 60 dias --'
+            case 180:
+                periodo_select = '-- 6 meses --'
+                print(periodo_select)
+            case 365:
+                periodo_select = '-- 1 ano --'
+    else:
+        current_month_days = date.today().day
+        response = requests.get(f'{API_URL}/tithe-list/{current_month_days}/{-1}/1')
+
     tithe_list = loads(response.text)['tithe_list']
     for i, item in enumerate(tithe_list):
 
@@ -202,11 +219,9 @@ def historico_de_dizimos():
             value= value2
         )
         tithe_list[i] = tithe
-    print(tithe_list)
 
-    return render_template('admin/historico-de-dizimos.html', tithe_list=tithe_list)
+    return render_template('admin/historico-de-dizimos.html', tithe_list=tithe_list, periodo_select=periodo_select)
 
-@app.route()
 
 @app.route('/painel-administrativo/lista-de-membros')
 @login_required
