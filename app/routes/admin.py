@@ -4,7 +4,7 @@ from flask_login import login_required, current_user
 from app.models.basemodels import User_With_Data
 from http.client import HTTPException
 from app.models.basemodels import *
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from app.config import API_URL
 from json import loads
 from app import app
@@ -222,6 +222,52 @@ def historico_de_dizimos():
 
     return render_template('admin/historico-de-dizimos.html', tithe_list=tithe_list, periodo_select=periodo_select)
 
+@app.route('/painel-administrativo/historico-de-ofertas')
+@login_required
+def historico_de_ofertas():
+    try:
+        if current_user.is_admin == False:
+            return redirect('/painel')
+    except AttributeError:
+        return render_template('client/entrar.html')
+    except:
+        return 'Erro Inesperado'
+
+    periodo_select = '-- Mês atual --'
+
+    if request.args.get('time'):
+        offer_time = int(request.args.get('time'))
+        response = requests.get(f'{API_URL}/offer-list/{date.today() - timedelta(offer_time)}/{date.today()}')
+        print(offer_time)
+        match offer_time:
+            case 30:
+                periodo_select = '-- 30 dias --'
+            case 60:
+                periodo_select = '-- 60 dias --'
+            case 180:
+                periodo_select = '-- 6 meses --'
+                print(periodo_select)
+            case 365:
+                periodo_select = '-- 1 ano --'
+    else:
+        response = requests.get(f'{API_URL}/offer-list/{date.today() - timedelta((date.today().day - 1))}/{date.today()}')
+
+    offer_list = loads(response.text)
+    print(offer_list)
+    for i, item in enumerate(offer_list):
+
+        offer_date = (datetime.strptime(item['offer_date'], '%Y-%m-%d')).strftime('%d/%m/%Y')
+        value = item['value']
+        value2 = (f'R$ {value:,.2f}').replace(".", ",")
+        offer = History_Offer(
+            offer_date=offer_date, 
+            value= value2, 
+            treasurer_id = int(item['treasurer_id'])
+        )
+        offer_list[i] = offer
+    print(offer_list)
+
+    return render_template('admin/historico-de-ofertas.html', offer_list=offer_list, periodo_select=periodo_select)
 
 @app.route('/painel-administrativo/lista-de-membros')
 @login_required

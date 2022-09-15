@@ -95,6 +95,11 @@ class Offer(BaseModel):
     offer_date: date
     treasurer_id: int
 
+class History_Offer(BaseModel):
+    value: str
+    offer_date: str
+    treasurer_id: int
+
 class Expense(BaseModel):
     value: float
     description: str
