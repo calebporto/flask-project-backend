@@ -290,6 +290,9 @@
     .data, .valor {
         width: 100%;
     }
+    .valor input {
+        width: 70%;
+    }
     .descricao input {
         width: 70%;
     }

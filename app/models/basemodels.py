@@ -105,3 +105,15 @@ class Expense(BaseModel):
     description: str
     expense_date: date
     treasurer_id: int
+
+class History_Expense(BaseModel):
+    value: str
+    description: str
+    expense_date: str
+
+class History_Finance(BaseModel):
+    ref: str
+    entry: str
+    issues: str
+    period_balance: str
+    total_balance: str

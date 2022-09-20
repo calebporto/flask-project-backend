@@ -80,6 +80,35 @@
             </div>
         </div>
     </div>
+    <div class="meusdados">
+        <div class="container dados">
+            <div class="data-title">
+                <p>Dízimos</p>
+            </div>
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th scope="col">Data</th>
+                        <th scope="col">Valor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if tithe_list_data[0] %}
+                    {% for linha in tithe_list_data %}
+                    <tr>
+                        <td>{{ linha.tithe_date }}</td>
+                        <td>{{ (linha.value) }}</td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="2">Não há registro de dízimo a ser mostrado.</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
     <div class="rodape">
         <div class="redes-sociais">
             <div class="container h-100">

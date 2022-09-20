@@ -180,8 +180,16 @@
     width: 15%;
 }
 .data, .valor {
+    width: 45%;
+    display: flex;
     margin: auto;
     font-weight: bold;
+}
+.data input, .valor input {
+    width: 60%;
+}
+.data label, .valor label {
+    width: 35%;
 }
 .item-table {
     margin-top: 10px;

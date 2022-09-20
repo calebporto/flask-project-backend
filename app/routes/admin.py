@@ -2,9 +2,9 @@ from flask import redirect, render_template, request, flash
 from app.providers.hash_provider import get_password_hash
 from flask_login import login_required, current_user
 from app.models.basemodels import User_With_Data
+from datetime import datetime, date, timedelta
 from http.client import HTTPException
 from app.models.basemodels import *
-from datetime import datetime, date, timedelta
 from app.config import API_URL
 from json import loads
 from app import app
@@ -191,7 +191,6 @@ def historico_de_dizimos():
     if request.args.get('time'):
         tithe_time = int(request.args.get('time'))
         response = requests.get(f'{API_URL}/tithe-list/{tithe_time}/{-1}/1')
-        print(tithe_time)
         match tithe_time:
             case 30:
                 periodo_select = '-- 30 dias --'
@@ -238,7 +237,6 @@ def historico_de_ofertas():
     if request.args.get('time'):
         offer_time = int(request.args.get('time'))
         response = requests.get(f'{API_URL}/offer-list/{date.today() - timedelta(offer_time)}/{date.today()}')
-        print(offer_time)
         match offer_time:
             case 30:
                 periodo_select = '-- 30 dias --'
@@ -253,7 +251,6 @@ def historico_de_ofertas():
         response = requests.get(f'{API_URL}/offer-list/{date.today() - timedelta((date.today().day - 1))}/{date.today()}')
 
     offer_list = loads(response.text)
-    print(offer_list)
     for i, item in enumerate(offer_list):
 
         offer_date = (datetime.strptime(item['offer_date'], '%Y-%m-%d')).strftime('%d/%m/%Y')
@@ -265,9 +262,90 @@ def historico_de_ofertas():
             treasurer_id = int(item['treasurer_id'])
         )
         offer_list[i] = offer
-    print(offer_list)
 
     return render_template('admin/historico-de-ofertas.html', offer_list=offer_list, periodo_select=periodo_select)
+
+@app.route('/painel-administrativo/historico-de-despesas')
+@login_required
+def historico_de_despesas():
+    try:
+        if current_user.is_admin == False:
+            return redirect('/painel')
+    except AttributeError:
+        return render_template('client/entrar.html')
+    except:
+        return 'Erro Inesperado'
+
+    periodo_select = '-- Mês atual --'
+
+    if request.args.get('time'):
+        expense_time = int(request.args.get('time'))
+        response = requests.get(f'{API_URL}/expense-list/{date.today() - timedelta(expense_time)}/{date.today()}')
+        print(expense_time)
+        match expense_time:
+            case 30:
+                periodo_select = '-- 30 dias --'
+            case 60:
+                periodo_select = '-- 60 dias --'
+            case 180:
+                periodo_select = '-- 6 meses --'
+            case 365:
+                periodo_select = '-- 1 ano --'
+    else:
+        response = requests.get(f'{API_URL}/expense-list/{date.today() - timedelta((date.today().day - 1))}/{date.today()}')
+
+    expense_list = loads(response.text)
+    for i, item in enumerate(expense_list):
+
+        expense_date = (datetime.strptime(item['expense_date'], '%Y-%m-%d')).strftime('%d/%m/%Y')
+        value = item['value']
+        value2 = (f'R$ {value:,.2f}').replace(".", ",")
+        description = item['description'].title()
+        offer = History_Expense(
+            value= value2, 
+            description = description, 
+            expense_date=expense_date
+        )
+        expense_list[i] = offer
+
+    return render_template('admin/historico-de-despesas.html', expense_list=expense_list, periodo_select=periodo_select)
+
+@app.route('/painel-administrativo/relatorios-financeiros')
+@login_required
+def relatorios_financeiros():
+    try:
+        if current_user.is_admin == False:
+            return redirect('/painel')
+    except AttributeError:
+        return render_template('client/entrar.html')
+    except:
+        return 'Erro Inesperado'
+
+    try:
+        start = date(date.today().year, date.today().month, 1) - timedelta(days=366)
+        end = date.today()
+        response = requests.get(f'{API_URL}/finance-list/{start}/{end}')
+        if response.status_code == 200:
+            finance_list = loads(response.text)
+            for i, item in enumerate(finance_list):
+                start = (datetime.strptime(item['start'], '%Y-%m-%d'))
+                ref = f'{str(start.month).rjust(2, "0")}/{start.year}'
+                entry = (((f'R$ {item["entry"]:,.2f}').replace(',','v')).replace('.',',')).replace('v','.')
+                issues = (((f'R$ {item["issues"]:,.2f}').replace(',','v')).replace('.',',')).replace('v','.')
+                period_balance = (((f'R$ {item["period_balance"]:,.2f}').replace(',','v')).replace('.',',')).replace('v','.')
+                total_balance = (((f'R$ {item["total_balance"]:,.2f}').replace(',','v')).replace('.',',')).replace('v','.')
+                data = History_Finance(
+                    ref=ref,
+                    entry=entry,
+                    issues=issues,
+                    period_balance=period_balance,
+                    total_balance=total_balance
+                )
+                finance_list[i] = data
+            return render_template('admin/relatorios-financeiros.html', finance_list=finance_list)        
+        return render_template('admin/relatorios-financeiros.html', finance_list=finance_list)
+    except:
+        return render_template('admin/relatorios-financeiros.html', finance_list=finance_list)
 
 @app.route('/painel-administrativo/lista-de-membros')
 @login_required
@@ -302,26 +380,43 @@ def detalhes():
         return render_template('client/entrar.html')
     except:
         return 'Erro Inesperado'
-    
+
     try:
-        response = requests.get(f'{API_URL}/get-user-with-data/{int(request.args.get("user_id"))}')
-        if response.status_code == 200:
-            if response.text:
-                user_data = User_With_Data(**loads(response.text))
+        user_response = requests.get(f'{API_URL}/get-user-with-data/{int(request.args.get("user_id"))}')
+        tithe_response = requests.get(f'{API_URL}/tithe-list/365/{int(request.args.get("user_id"))}/2')
+        if user_response.status_code == 200:
+            if user_response.text:
+                user_data = User_With_Data(**loads(user_response.text))
                 if user_data.gender.lower() == 'f':
                     user_data.gender = 'Feminino'
                 elif user_data.gender.lower() == 'm':
                     user_data.gender = 'Masculino'
                 user_data.birth = user_data.birth = (user_data.birth).strftime('%d/%m/%Y')
-                
-                return render_template('admin/detalhes.html', user_data=user_data)
             else:
                 flash('Não foi possível efetuar a solicitação.')
                 return redirect('/painel-administrativo')
         else:
             flash('Algo deu errado.')
             return redirect('/painel-administrativo')
+        
+        if tithe_response.status_code == 200:
+            if tithe_response.text == 'null':
+                tithe_list_data = []
+            else:
+                tithe_list_dict = loads(tithe_response.text)
+                tithe_list_data = tithe_list_dict['tithe_list']
+                for i, linha in enumerate(tithe_list_data):
+                    linha = Tithe_List(value=linha['value'], tithe_date=linha['tithe_date'], treasurer=linha['treasurer'])
+                    linha.value = f'R$ {linha.value:,.2f}'
+                    linha.tithe_date = (linha.tithe_date).strftime('%d/%m/%Y')
+                    linha.treasurer = (linha.treasurer).title()
+                    tithe_list_data[i] = linha
+        else:
+            tithe_list_data = []
+
+        return render_template('admin/detalhes.html', user_data=user_data,tithe_list_data=tithe_list_data)
     except:
+        print('exceção')
         flash('Algo deu errado.')
         return redirect('/painel-administrativo')
 
