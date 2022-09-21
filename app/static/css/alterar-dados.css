@@ -75,6 +75,38 @@
 .meusdados {
     margin-top: 6rem;
 }
+.voltar {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+}
+.container-voltar {
+    width: 60%;
+    display: flex;
+    justify-content: flex-start;
+}
+.container-voltar a {
+    width: 20%;
+}
+.container-voltar button {
+    border-radius: 5px;
+    width: 100%;
+    border: none;
+    color: white;
+    background: linear-gradient(rgb(82, 8, 8), black);
+    cursor: pointer;
+    box-shadow: 0px 3px 2px rgb(59, 41, 41);
+}
+.container-voltar button:hover {
+    background: linear-gradient(rgb(187, 21, 21), rgb(41, 41, 41));
+}
+.container-voltar button:active {
+    box-shadow: 0px 1px 2px rgb(59, 41, 41);
+    position: relative;
+    top: 2px;
+}
 .container.dados {
     display: flex;
     justify-content: center;
@@ -289,6 +321,12 @@
     .button {
         padding-top: 10px;
         padding-bottom: 10px;
+    }
+    .container-voltar {
+        width: 90%;
+    }
+    .container-voltar button:hover {
+        background: linear-gradient(rgb(82, 8, 8), black);
     }
     .meusdados {
         margin-top: 2rem;
