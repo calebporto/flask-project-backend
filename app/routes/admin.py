@@ -1,5 +1,6 @@
 from flask import redirect, render_template, request, flash
 from app.providers.hash_provider import get_password_hash
+from app.providers.requests import *
 from flask_login import login_required, current_user
 from app.models.basemodels import User_With_Data
 from datetime import datetime, date, timedelta
@@ -23,7 +24,7 @@ def painel_administrativo():
     except:
         return 'Erro Inesperado'
 
-    waiting_query = requests.get(f'{API_URL}/waiting-list')
+    waiting_query = get_request('/waiting-list')
     waiting_list_size = len(loads(waiting_query.text))
 
     return render_template('admin/painel-administrativo.html', waiting_list_size=waiting_list_size)
@@ -95,15 +96,14 @@ def entradas():
                     offers.append(offer_dict)
 
             if len(tithes) > 0:
-                tithe_response = requests.post(f'{API_URL}/tithe-include', json.dumps(tithes))
+                tithe_response = post_request('/tithe-include', json.dumps(tithes))
                 if tithe_response.status_code == 200:
                     pass
                 else:
                     flash('Algo deu errado na inclusão dos dízimos. Confira os dados fornecidos.')
             
             if len(offers) > 0:
-                print(json.dumps(offers))
-                offer_response = requests.post(f'{API_URL}/offer-include', json.dumps(offers))
+                offer_response = post_request('/offer-include', json.dumps(offers))
                 if offer_response.status_code == 200:
                     pass
                 else:
@@ -116,7 +116,7 @@ def entradas():
             return redirect('/painel-administrativo/entradas')
     else:
         try:
-            response = requests.get(f'{API_URL}/user-list')
+            response = get_request('/user-list')
             if response.status_code == 200:
                 userlist = loads(response.text)
                 for i, user in enumerate(userlist):
@@ -162,7 +162,7 @@ def saidas():
                 expense_date=expense_date,
                 treasurer_id=treasurer_id
             )
-            response = requests.post(f'{API_URL}/expense-include', send.json())
+            response = post_request('/expense-include', send.json())
             if response.status_code == 200:
                 flash('Saída registrada com sucesso.')
                 return redirect('/painel-administrativo/saidas')
@@ -190,7 +190,7 @@ def historico_de_dizimos():
 
     if request.args.get('time'):
         tithe_time = int(request.args.get('time'))
-        response = requests.get(f'{API_URL}/tithe-list/{tithe_time}/{-1}/1')
+        response = get_request(f'/tithe-list/{tithe_time}/{-1}/1')
         match tithe_time:
             case 30:
                 periodo_select = '-- 30 dias --'
@@ -198,12 +198,11 @@ def historico_de_dizimos():
                 periodo_select = '-- 60 dias --'
             case 180:
                 periodo_select = '-- 6 meses --'
-                print(periodo_select)
             case 365:
                 periodo_select = '-- 1 ano --'
     else:
         current_month_days = date.today().day
-        response = requests.get(f'{API_URL}/tithe-list/{current_month_days}/{-1}/1')
+        response = get_request(f'/tithe-list/{current_month_days}/{-1}/1')
 
     tithe_list = loads(response.text)['tithe_list']
     for i, item in enumerate(tithe_list):
@@ -236,7 +235,7 @@ def historico_de_ofertas():
 
     if request.args.get('time'):
         offer_time = int(request.args.get('time'))
-        response = requests.get(f'{API_URL}/offer-list/{date.today() - timedelta(offer_time)}/{date.today()}')
+        response = get_request(f'/offer-list/{date.today() - timedelta(offer_time)}/{date.today()}')
         match offer_time:
             case 30:
                 periodo_select = '-- 30 dias --'
@@ -244,11 +243,10 @@ def historico_de_ofertas():
                 periodo_select = '-- 60 dias --'
             case 180:
                 periodo_select = '-- 6 meses --'
-                print(periodo_select)
             case 365:
                 periodo_select = '-- 1 ano --'
     else:
-        response = requests.get(f'{API_URL}/offer-list/{date.today() - timedelta((date.today().day - 1))}/{date.today()}')
+        response = get_request(f'/offer-list/{date.today() - timedelta((date.today().day - 1))}/{date.today()}')
 
     offer_list = loads(response.text)
     for i, item in enumerate(offer_list):
@@ -280,8 +278,7 @@ def historico_de_despesas():
 
     if request.args.get('time'):
         expense_time = int(request.args.get('time'))
-        response = requests.get(f'{API_URL}/expense-list/{date.today() - timedelta(expense_time)}/{date.today()}')
-        print(expense_time)
+        response = get_request(f'/expense-list/{date.today() - timedelta(expense_time)}/{date.today()}')
         match expense_time:
             case 30:
                 periodo_select = '-- 30 dias --'
@@ -292,7 +289,7 @@ def historico_de_despesas():
             case 365:
                 periodo_select = '-- 1 ano --'
     else:
-        response = requests.get(f'{API_URL}/expense-list/{date.today() - timedelta((date.today().day - 1))}/{date.today()}')
+        response = get_request(f'/expense-list/{date.today() - timedelta((date.today().day - 1))}/{date.today()}')
 
     expense_list = loads(response.text)
     for i, item in enumerate(expense_list):
@@ -324,7 +321,7 @@ def relatorios_financeiros():
     try:
         start = date(date.today().year, date.today().month, 1) - timedelta(days=366)
         end = date.today()
-        response = requests.get(f'{API_URL}/finance-list/{start}/{end}')
+        response = get_request(f'/finance-list/{start}/{end}')
         if response.status_code == 200:
             finance_list = loads(response.text)
             for i, item in enumerate(finance_list):
@@ -358,7 +355,7 @@ def lista_de_membros():
     except:
         return 'Erro Inesperado'
     try:
-        response = requests.get(f'{API_URL}/user-list')
+        response = get_request('/user-list')
         if response.status_code == 200:
             userlist = loads(response.text)
             for i, user in enumerate(userlist):
@@ -382,8 +379,8 @@ def detalhes():
         return 'Erro Inesperado'
 
     try:
-        user_response = requests.get(f'{API_URL}/get-user-with-data/{int(request.args.get("user_id"))}')
-        tithe_response = requests.get(f'{API_URL}/tithe-list/365/{int(request.args.get("user_id"))}/2')
+        user_response = get_request(f'/get-user-with-data/{int(request.args.get("user_id"))}')
+        tithe_response = get_request(f'/tithe-list/365/{int(request.args.get("user_id"))}/2')
         if user_response.status_code == 200:
             if user_response.text:
                 user_data = User_With_Data(**loads(user_response.text))
@@ -416,7 +413,6 @@ def detalhes():
 
         return render_template('admin/detalhes.html', user_data=user_data,tithe_list_data=tithe_list_data)
     except:
-        print('exceção')
         flash('Algo deu errado.')
         return redirect('/painel-administrativo')
 
@@ -449,7 +445,7 @@ def lista_de_espera():
                     added=date.today()
                 )
             )
-            accept = requests.post(f'{API_URL}/add-user', send.json())
+            accept = post_request('/add-user', send.json())
             if accept.status_code == 200:
                 flash('Cadastro registrado com sucesso.')
                 return redirect('/painel-administrativo/lista-de-espera')
@@ -457,7 +453,7 @@ def lista_de_espera():
                 flash('Não foi possível efetuar a solicitação.')
                 return redirect('/painel-administrativo/lista-de-espera')
         else:
-            reject = requests.delete(f'{API_URL}/reject-waiting-user/{int(request.form.get("id"))}')
+            reject = delete_request(f'/reject-waiting-user/{int(request.form.get("id"))}')
             if reject.status_code == 200:
                 flash('Cadastro rejeitado.')
                 return redirect('/painel-administrativo/lista-de-espera')
@@ -473,7 +469,7 @@ def lista_de_espera():
         except:
             return 'Erro Inesperado'
 
-        waiting_query = requests.get(f'{API_URL}/waiting-list')
+        waiting_query = get_request('/waiting-list')
         waiting_list = loads(waiting_query.text)
         for i, pessoa in enumerate(waiting_list):
             waiting_list[i] = User_With_Data(**pessoa)
@@ -515,7 +511,7 @@ def adicionar_membro():
                 added= date.today()
             )
 
-        response = requests.post(f'{API_URL}/add-user', send.json())
+        response = post_request('/add-user', send.json())
         
         if response.status_code == 200:
             dados = loads(response.text)['confirm']
@@ -553,7 +549,7 @@ def alterar_cadastro():
             tel = request.form.get('celular'),
             birth = datetime.strptime(request.form.get('nascimento'), '%d/%m/%Y').date()
         )
-        response = requests.post(f'{API_URL}/user-update', send.json())
+        response = post_request('/user-update', send.json())
         if response.status_code == 200:
             flash('Cadastro alterado com sucesso.')
             return redirect('/painel-administrativo')
@@ -562,7 +558,7 @@ def alterar_cadastro():
             return redirect('/painel_administrativo')
     else:
         try:
-            response = requests.get(f'{API_URL}/user-list')
+            response = get_request('/user-list')
             if response.status_code == 200:
                 userlist = loads(response.text)
                 for i, user in enumerate(userlist):
@@ -575,7 +571,7 @@ def alterar_cadastro():
 @login_required
 def get_user_data(user_id):
     try:
-        user = requests.get(f'{API_URL}/get-user-with-data/{int(user_id)}')
+        user = get_request(f'/get-user-with-data/{int(user_id)}')
     
         if user.status_code == 200:
             userdata = loads(user.text)
@@ -598,7 +594,7 @@ def excluir_membro():
         return render_template('client/entrar.html')
     
     if request.method == 'POST':
-        response = requests.delete(f'{API_URL}/delete-user/{int(request.form.get("user_id"))}')
+        response = delete_request(f'/delete-user/{int(request.form.get("user_id"))}')
         if response.status_code == 200:
             if loads(response.text)['confirm'] == True:
                 flash('Membro excluído com sucesso')
@@ -611,7 +607,7 @@ def excluir_membro():
             return redirect('/painel-administrativo')
     else:
         try:
-            response = requests.get(f'{API_URL}/user-list')
+            response = get_request('/user-list')
             if response.status_code == 200:
                 userlist = loads(response.text)
                 for i, user in enumerate(userlist):

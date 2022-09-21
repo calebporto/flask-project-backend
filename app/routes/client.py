@@ -1,6 +1,7 @@
 from flask_login import current_user, login_user, logout_user, login_required
 from flask import render_template, request, flash, redirect, session
 from app.providers.hash_provider import *
+from app.providers.requests import *
 from app.models.basemodels import *
 from app.config import API_URL
 from datetime import datetime
@@ -30,7 +31,7 @@ def cadastrar():
             tel= request.form.get('tel').lower(), 
             birth= datetime.strptime(request.form.get('nascimento'), '%d/%m/%Y').date())
 
-        response = requests.post(f'{API_URL}/send-user', send.json())
+        response = post_request('/send-user', send.json())
         
         if response.status_code == 200:
             dados = loads(response.text)['confirm']
@@ -53,7 +54,7 @@ def entrar():
         send = Get_User(
             email= request.form.get('login').lower()
         )
-        response = requests.post(f'{API_URL}/get-user', send.json())
+        response = post_request('/get-user', send.json())
         if response.status_code == 200:
             # Criar sessão de usuário
             if response.text == 'null':
@@ -130,9 +131,9 @@ def painel():
             user_data.address = (user_data.address).title()
             return user_data
 
-    get_user = requests.get(f'{API_URL}/get-user-with-data/{current_user.id}')
+    get_user = get_request(f'/get-user-with-data/{current_user.id}')
     time = 365
-    tithe_list = requests.get(f'{API_URL}/tithe-list/{time}/{current_user.id}/2')
+    tithe_list = get_request(f'/tithe-list/{time}/{current_user.id}/2')
 
     if get_user.status_code == 200 and tithe_list.status_code == 200:
         user_data = get_user_func(get_user)
@@ -159,7 +160,6 @@ def painel():
 
 @app.route('/painel/alterar-dados', methods=['POST'])
 def post_user_update():
-    print(request.form)
     user = User_Update(id=request.form['id'])
     user.name = request.form['nome'].lower() if request.form['nome'] else None
     user.email = request.form['email'].lower() if request.form['email'] else None
@@ -172,9 +172,7 @@ def post_user_update():
         birth = datetime.strptime(request.form['nascimento'], '%d/%m/%Y').date()
         user.birth = birth
 
-    print(user)
-    response = requests.post(f'{API_URL}/user-update', user.json())
-    print(response.text)
+    response = post_request('/user-update', user.json())
     if response.status_code == 200:
             dados = loads(response.text)['confirm']
 
@@ -191,7 +189,7 @@ def post_user_update():
 @app.route('/painel/alterar-dados/<user_id>', methods=['GET'])
 def get_user_update(user_id: int):
         
-    get_user = requests.get(f'{API_URL}/get-user-with-data/{user_id}')
+    get_user = get_request(f'/get-user-with-data/{user_id}')
     if get_user.text == 'null':
         user_data = User_With_Data
         flash('Algo deu errado.')
