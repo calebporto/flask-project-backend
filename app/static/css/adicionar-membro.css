@@ -226,6 +226,7 @@
     color: black;
     background-color: yellow;
     padding: 5px;
+    width: 100%;
 }
 .rodape {
     background-color: rgb(102, 31, 31);

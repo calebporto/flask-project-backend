@@ -10,5 +10,6 @@ app.config['REMEMBER_COOKIE_REFRESH_EACH_REQUEST'] = REMEMBER_COOKIE_REFRESH_EAC
 
 login_manager = LoginManager(app)
 login_manager.login_view = "/entrar"  # Definindo a página de redirecionamento caso o usuário não esteja logado através de login_required
+login_manager.login_message = u'Por favor, faça login para acessar esta página'
 
 from app.routes import client, admin

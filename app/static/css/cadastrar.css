@@ -138,6 +138,7 @@ div.container-menu, .menu {
     color: black;
     background-color: yellow;
     padding: 5px;
+    width: 100%;
 }
 
 @media (max-width: 768px) {

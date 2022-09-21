@@ -80,7 +80,7 @@
     display: flex;
     text-align: center;
     justify-content: center;
-    width: 40%;
+    width: 100%;
     height: auto;
     font-size: 30px;
     font-weight: bold;
@@ -218,7 +218,7 @@
         font-size: 20px;
     }
     .alert {
-        width: 90%;
+        width: 100%;
         font-size: 20px;
     }
     .adm-buttons button:hover {
