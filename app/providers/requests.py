@@ -4,7 +4,7 @@ import os
 API_URL = os.environ["API_URL"]
 API_KEY = os.environ["API_KEY"]
 AUTHORIZED_ID = os.environ["AUTHORIZED_ID"]
-headers = {'api_key': API_KEY, 'id': AUTHORIZED_IP}
+headers = {'api_key': API_KEY, 'id': AUTHORIZED_ID}
 
 def post_request(endpoint, data):
     return requests.post(f'{API_URL}{endpoint}', data, headers=headers)
