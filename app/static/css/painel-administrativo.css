@@ -62,7 +62,7 @@
     text-align: center;
 }
 .meusdados {
-    margin-top: 6rem;
+    margin-top: 3rem;
 }
 .container.dados {
     display: flex;
@@ -75,6 +75,26 @@
     border: 2px solid rgb(78, 4, 4);
     box-shadow: 0px 7px 8px rgba(50, 50, 50, 0.77);
     padding: 15px;
+}
+.saldo {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+}
+.saldomes p, .saldototal p {
+    font-size: 40px;
+    font-weight: bold;
+    padding: 12px;
+    padding-left: 20px;
+    padding-right: 20px;
+    border-radius: 10px;
+    margin-top: 0.7rem;
+    border: 2px dotted rgb(82, 8, 8);
+}
+.saldomes label, .saldototal label {
+    font-weight: bold;
+    font-size: 20px;
+    color: rgb(82, 8, 8);
 }
 .alert {
     display: flex;
@@ -212,6 +232,12 @@
     }
     .container.dados {
         width: 90%;
+    }
+    .saldomes p, .saldototal p {
+        font-size: 15px;
+    }
+    .saldomes label, .saldototal label {
+        font-size: 10px;
     }
     .data-title {
         width: 90%;

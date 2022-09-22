@@ -24,10 +24,28 @@ def painel_administrativo():
     except:
         return 'Erro Inesperado'
 
+    start = date(date.today().year, date.today().month, 1)
+    end = date.today()
+    balance_response = get_request(f'/finance-values/{start}/{end}')
+    
+    offer_sum = round(sum(loads(balance_response.text)['offers']), 2)
+    tithe_sum = round(sum(loads(balance_response.text)['tithes']), 2)
+    expense_sum = round(sum(loads(balance_response.text)['expenses']), 2)
+    previous_balance = round(sum(loads(balance_response.text)['previous_balance']), 2)
+    
+    balance1 = offer_sum + tithe_sum - expense_sum  # period_balance
+    balance2 = balance1 + previous_balance  # total_balance
+    period_balance = (((f'R$ {(balance1):,.2f}').replace(',','v')).replace('.',',')).replace('v','.')
+    total_balance = (((f'R$ {(balance2):,.2f}').replace(',','v')).replace('.',',')).replace('v','.')
+    
     waiting_query = get_request('/waiting-list')
     waiting_list_size = len(loads(waiting_query.text))
 
-    return render_template('admin/painel-administrativo.html', waiting_list_size=waiting_list_size)
+    return render_template(
+        'admin/painel-administrativo.html', 
+        waiting_list_size=waiting_list_size, 
+        period_balance=period_balance,
+        total_balance=total_balance)
 
 @app.route('/painel-administrativo/entradas', methods=['GET', 'POST'])
 @login_required
