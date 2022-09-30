@@ -1,0 +1,356 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@100;200;300;400;500;600;700;800;900&display=swap');
+* {
+    padding: 0;
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    box-sizing: border-box;
+}
+.header {
+    background: linear-gradient(rgb(82, 8, 8), black);
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    height: 100px;
+    margin-top: 10px;
+    -webkit-box-shadow: 0px 7px 5px rgba(50, 50, 50, 0.77);
+    -moz-box-shadow:    0px 7px 5px rgba(50, 50, 50, 0.77);
+    box-shadow:         0px 7px 5px rgba(50, 50, 50, 0.77);
+}
+.container-header {
+    display: flex;
+    justify-content: space-between;
+    margin-left: auto;
+    margin-right: auto;
+}
+.logo {
+    width: 25%;
+    height: 100%;
+    display: flex;
+    justify-content: flex-start;
+    text-align: center;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+.img {
+    height: 100%;
+    width: auto;
+}
+.title {
+    font-family: 'League Spartan', sans-serif;
+    font-size: 40px;
+    font-weight: bold;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    color: white;
+    width: 50%;
+    height: 100%;
+}
+.title a {
+    text-decoration: none;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    color: white;
+    cursor: pointer;
+}
+.title a:hover {
+    color: white;
+}
+.title p {
+    margin: auto;
+}
+.button {
+    height: 100%;
+    width: 25%;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    display: flex;
+    justify-content: flex-end;
+    text-align: center;
+}
+.voltar {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+}
+.container-voltar {
+    width: 60%;
+    display: flex;
+    justify-content: flex-start;
+}
+.container-voltar a {
+    width: 20%;
+}
+.container-voltar button {
+    border-radius: 5px;
+    width: 100%;
+    border: none;
+    color: white;
+    background: linear-gradient(rgb(82, 8, 8), black);
+    cursor: pointer;
+    box-shadow: 0px 3px 2px rgb(59, 41, 41);
+}
+.container-voltar button:hover {
+    background: linear-gradient(rgb(187, 21, 21), rgb(41, 41, 41));
+}
+.container-voltar button:active {
+    box-shadow: 0px 1px 2px rgb(59, 41, 41);
+    position: relative;
+    top: 2px;
+}
+.meusdados {
+    margin-top: 6rem;
+}
+.container.dados {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    flex-direction: column;
+    width: 60%;
+    height: auto;
+    border-radius: 10px;
+    border: 2px solid rgb(78, 4, 4);
+    box-shadow: 0px 7px 8px rgba(50, 50, 50, 0.77);
+    padding: 15px;
+}
+.alert {
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    width: 100%;
+    height: auto;
+    font-size: 20px;
+    font-weight: bold;
+    margin: auto;
+    margin-bottom: 15px;
+    background-color: yellow;
+    color: black;
+    padding: 10px;
+}
+.alert p {
+    margin: auto;
+}
+.data-title {
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    width: 60%;
+    height: auto;
+    font-size: 30px;
+    font-weight: bold;
+    margin: auto;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    background: linear-gradient(rgb(82, 8, 8), black);
+    color: white;
+    padding: 10px;
+}
+.data-title p {
+    margin: auto;
+}
+.filter {
+    padding-bottom: 15px;
+    margin-top: 1rem;
+    border-bottom: 1px solid rgb(121, 120, 120);
+    width: 100%;
+    display: flex;
+}
+.filter label{
+    width: 40%;
+    font-weight: bold;
+    margin: auto;
+}
+.filter select {
+    width: 50%;
+}
+table {
+    margin-top: 10px;
+    font-size: large;
+}
+thead {
+    font-weight: bold;
+}
+.remove-button {
+    border-radius: 5px;
+    width: 80%;
+    border: none;
+    color: white;
+    background: linear-gradient(rgb(82, 8, 8), black);
+    cursor: pointer;
+    box-shadow: 0px 3px 2px rgb(59, 41, 41);
+    padding: 4px;
+}
+.remove-button:hover {
+    background: linear-gradient(rgb(187, 21, 21), rgb(41, 41, 41));
+}
+.remove-button:active {
+    box-shadow: 0px 1px 2px rgb(59, 41, 41);
+    position: relative;
+    top: 2px;
+}
+.add-adm {
+    width: 100%;
+    margin-top: 5px;
+}
+.add-button {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+.add-button-bt {
+    width: 50%;
+    padding: 5px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    color: black;
+    background: linear-gradient(rgb(133, 131, 0), rgb(219, 243, 112));
+    border-radius: 15px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0px 5px 2px rgb(59, 41, 41);
+}
+.add-button-bt:hover {
+    color: white;
+    background: linear-gradient(rgb(83, 82, 0), rgb(158, 175, 80));
+}
+.add-button-bt:active {
+    box-shadow: 0px 2px 2px rgb(59, 41, 41);
+    position: relative;
+    top: 3px;
+}
+.add-function {
+    width: 100%;
+    display: flex;
+    padding: 20px;
+    border: 1px dotted black;
+}
+.add-function form {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+}
+.add-function select {
+    width: 70%;
+    text-align: center;
+}
+.add-function-button {
+    border-radius: 5px;
+    border: none;
+    color: white;
+    background: linear-gradient(rgb(82, 8, 8), black);
+    cursor: pointer;
+    box-shadow: 0px 3px 2px rgb(59, 41, 41);
+    width: 20%;
+}
+.add-function-button:hover {
+    background: linear-gradient(rgb(187, 21, 21), rgb(41, 41, 41));
+}
+.add-function-button:active {
+    box-shadow: 0px 1px 2px rgb(59, 41, 41);
+    position: relative;
+    top: 2px;
+}
+.rodape {
+    background-color: rgb(102, 31, 31);
+    height: 15rem;
+    margin-top: 50px;
+    padding-bottom: 3rem;
+}
+.redes-sociais {
+    height: 40%;
+    background-color: rgba(255, 255, 255, 0.192);
+}
+.container.h-100 {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    padding: 4px;
+}
+.insta-logo {
+    height: 100%;
+    width: auto;
+}
+.rodape-text {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    flex-wrap: wrap;
+}
+.rodape-text1 {
+    width: 100%;
+    margin-bottom: 0;
+    color: white;
+    position: relative;
+    top: 100%;
+    transform: translateY(100%); 
+}
+.rodape-text2 {
+    width: 100%;
+    color: white;
+    font-weight: bold;
+    position: relative;
+    top: 100%;
+    transform: translateY(100%); 
+}
+
+@media (max-width: 768px) {
+    .meusdados {
+        margin-top: 2rem;
+    }
+    .container-voltar {
+        width: 90%;
+    }
+    .container-voltar button:hover {
+        background: linear-gradient(rgb(82, 8, 8), black);
+    }
+    .container.dados {
+        width: 90%;
+    }
+    .title {
+        font-size: 16px;
+    }
+    .data-title {
+        width: 80%;
+        font-size: 14px;
+    }
+    table {
+        font-size: small;
+    }
+    .add-button-bt {
+        width: 60%;
+        font-size: 10px;
+    }
+    .add-function {
+        font-size: 10px;
+    }
+    .add-function select {
+        width: 60%;
+    }
+    .add-function-button {
+        width: 30%;
+    }
+}
+@media (max-width: 300px) {
+    .img {
+        height: 80%;
+    }
+    .title {
+        font-size: 12px;
+    }
+    .voltar {
+        font-size: 10px;
+    }
+    table {
+        font-size: 8px;
+    }
+    .add-button-bt {
+        font-size: 8px;
+    }
+}

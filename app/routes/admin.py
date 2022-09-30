@@ -449,15 +449,15 @@ def lista_de_espera():
             send = Add_User(
                 user=UserAdd(
                     user_to_del=int(request.form.get('user_to_del')),
-                    name=request.form.get('name'),
-                    email=request.form.get('email'),
+                    name=request.form.get('name').lower(),
+                    email=request.form.get('email').lower(),
                     hash=request.form.get('hash'),
                     is_admin=False,
                     is_designer=False
                 ), user_data=User_Data(
                     cep=request.form.get('cep'),
-                    address=request.form.get('address'),
-                    gender=request.form.get('gender'),
+                    address=request.form.get('address').lower(),
+                    gender=request.form.get('gender').lower(),
                     tel=request.form.get('tel'),
                     birth=datetime.strptime(request.form.get('birth'), '%d/%m/%Y').date(),
                     added=date.today()
@@ -634,3 +634,343 @@ def excluir_membro():
         except Exception as error:
             return HTTPException(400, detail=str(error))
         
+@app.route('/painel-administrativo/administradores', methods=['GET', 'POST'])
+@login_required
+def administradores():
+    try:
+        if current_user.is_admin == False:
+            return redirect('/painel')
+    except AttributeError:
+        return render_template('client/entrar.html')
+    except:
+        return render_template('client/entrar.html')
+    
+    if request.method == 'POST':
+        if request.form.get('add_id'):
+            response = get_request(f'/include-admin/{request.form.get("add_id")}/1')
+            if response.status_code == 200:
+                confirm = loads(response.text)
+                if confirm['confirm'] == True:
+                    flash('Administrador cadastrado.')
+                else:
+                    flash('Algo deu errado.')
+            else:
+                flash('Algo deu errado.')
+        else:
+            flash('Algo deu errado.')
+        return redirect('/painel-administrativo/administradores')
+
+    else:
+        if request.args.get('is_admin'): # Endpoint para ajax buscar membros não admin para adicionar admin
+            is_admin = False
+            not_admin_list = get_request(f'/get-admin/{is_admin}/1')
+            if not_admin_list.status_code == 200:
+                return not_admin_list.text
+            else:
+                return []
+        
+        # Consulta lista de administradores
+        is_admin = True
+        admin_list = get_request(f'/get-admin/{is_admin}/1')
+
+        if request.args.get('remove_id'):
+            if admin_list.status_code == 200:
+                if len(loads(admin_list.text)) <= 1:
+                    flash('Você não pode remover o único administrador do sistema.')
+                else:
+                    response = get_request(f'/remove-admin/{request.args.get("remove_id")}/1')
+                    if response.status_code == 200:
+                        confirm = loads(response.text)
+                        if confirm['confirm'] == True:
+                            flash('Administrador removido.')
+                        else:
+                            flash('Algo deu errado.')
+                    else:
+                        flash('Algo deu errado.')
+            else:
+                flash('Algo deu errado.')
+            return redirect('/painel-administrativo/administradores')
+
+        if admin_list.status_code == 200:
+            user_list = loads(admin_list.text)
+            for i, user in enumerate(user_list):
+                data = Simple_User(**user)
+                user_list[i] = data
+            return render_template('admin/administradores.html', user_list = user_list)
+        else:
+            return render_template('admin/administradores.html', user_list = [])
+
+
+@app.route('/painel-administrativo/tesoureiros', methods=['GET', 'POST'])
+@login_required
+def tesoureiros():
+    # Verificando se o usuário é administrador, caso não seja, retorna ao painel comum
+    try:
+        if current_user.is_admin == False:
+            return redirect('/painel')
+    except AttributeError:
+        return render_template('client/entrar.html')
+    except:
+        return render_template('client/entrar.html')
+
+    if request.method == 'POST':
+        # Cadastrando tesoureiro
+        if request.form.get('add_id'):
+            response = get_request(f'/include-admin/{request.form.get("add_id")}/2')
+            if response.status_code == 200:
+                confirm = loads(response.text)
+                if confirm['confirm'] == True:
+                    flash('Tesoureiro cadastrado.')
+                else:
+                    flash('Algo deu errado.')
+            else:
+                flash('Algo deu errado.')
+        else:
+            flash('Algo deu errado.')
+        return redirect('/painel-administrativo/tesoureiros')
+        
+    else:
+        # Endpoint para ajax buscar membros não admin para adicionar admin
+        if request.args.get('is_admin'):
+            is_treasurer = False
+            not_treasurer_list = get_request(f'/get-admin/{is_treasurer}/2')
+            if not_treasurer_list.status_code == 200:
+                return not_treasurer_list.text
+            else:
+                return []
+        
+        # Consulta lista de tesoureiros
+        is_treasurer = True
+        treasurer_list = get_request(f'/get-admin/{is_treasurer}/2')
+
+        # remover tesoureiro
+        if request.args.get('remove_id'):
+            if treasurer_list.status_code == 200:
+                response = get_request(f'/remove-admin/{request.args.get("remove_id")}/2')
+                if response.status_code == 200:
+                    confirm = loads(response.text)
+                    if confirm['confirm'] == True:
+                        flash('Tesoureiro removido.')
+                    else:
+                        flash('Algo deu errado.')
+                else:
+                    flash('Algo deu errado.')
+            else:
+                flash('Algo deu errado.')
+            return redirect('/painel-administrativo/tesoureiros')
+
+        # Lista de tesoureiros para o front end
+        if treasurer_list.status_code == 200:
+            user_list = loads(treasurer_list.text)
+            for i, user in enumerate(user_list):
+                data = Simple_User(**user)
+                user_list[i] = data
+            return render_template('admin/tesoureiros.html', user_list = user_list)
+        else:
+            return render_template('admin/tesoureiros.html', user_list = [])
+    
+
+@app.route('/painel-administrativo/secretarios', methods=['GET', 'POST'])
+@login_required
+def secretarios():
+    # Verificando se o usuário é administrador, caso não seja, retorna ao painel comum
+    try:
+        if current_user.is_admin == False:
+            return redirect('/painel')
+    except AttributeError:
+        return render_template('client/entrar.html')
+    except:
+        return render_template('client/entrar.html')
+
+    if request.method == 'POST':
+        # Cadastrando secretario
+        if request.form.get('add_id'):
+            response = get_request(f'/include-admin/{request.form.get("add_id")}/3')
+            if response.status_code == 200:
+                confirm = loads(response.text)
+                if confirm['confirm'] == True:
+                    flash('Secretário cadastrado.')
+                else:
+                    flash('Algo deu errado.')
+            else:
+                flash('Algo deu errado.')
+        else:
+            flash('Algo deu errado.')
+        return redirect('/painel-administrativo/secretarios')
+        
+    else:
+        # Endpoint para ajax buscar membros não secretario para adicionar secretario
+        if request.args.get('is_admin'):
+            is_secretary = False
+            not_secretary_list = get_request(f'/get-admin/{is_secretary}/3')
+            if not_secretary_list.status_code == 200:
+                return not_secretary_list.text
+            else:
+                return []
+        
+        # Consulta lista de secretários
+        is_secretary = True
+        secretary_list = get_request(f'/get-admin/{is_secretary}/3')
+
+        # remover secretário
+        if request.args.get('remove_id'):
+            if secretary_list.status_code == 200:
+                response = get_request(f'/remove-admin/{request.args.get("remove_id")}/3')
+                if response.status_code == 200:
+                    confirm = loads(response.text)
+                    if confirm['confirm'] == True:
+                        flash('Secretário removido.')
+                    else:
+                        flash('Algo deu errado.')
+                else:
+                    flash('Algo deu errado.')
+            else:
+                flash('Algo deu errado.')
+            return redirect('/painel-administrativo/secretarios')
+
+        # Lista de secretários para o front end
+        if secretary_list.status_code == 200:
+            user_list = loads(secretary_list.text)
+            for i, user in enumerate(user_list):
+                data = Simple_User(**user)
+                user_list[i] = data
+            return render_template('admin/secretarios.html', user_list = user_list)
+        else:
+            return render_template('admin/secretarios.html', user_list = [])
+    
+@app.route('/painel-administrativo/conselho-fiscal', methods=['GET', 'POST'])
+@login_required
+def conselho_fiscal():
+    # Verificando se o usuário é administrador, caso não seja, retorna ao painel comum
+    try:
+        if current_user.is_admin == False:
+            return redirect('/painel')
+    except AttributeError:
+        return render_template('client/entrar.html')
+    except:
+        return render_template('client/entrar.html')
+
+    if request.method == 'POST':
+        # Cadastrando conselheiro fiscal
+        if request.form.get('add_id'):
+            response = get_request(f'/include-admin/{request.form.get("add_id")}/4')
+            if response.status_code == 200:
+                confirm = loads(response.text)
+                if confirm['confirm'] == True:
+                    flash('Conselheiro fiscal cadastrado.')
+                else:
+                    flash('Algo deu errado.')
+            else:
+                flash('Algo deu errado.')
+        else:
+            flash('Algo deu errado.')
+        return redirect('/painel-administrativo/conselho-fiscal')
+        
+    else:
+        # Endpoint para ajax buscar membros não conselheiro fiscal para adicionar
+        if request.args.get('is_admin'):
+            is_adviser = False
+            not_adviser_list = get_request(f'/get-admin/{is_adviser}/4')
+            if not_adviser_list.status_code == 200:
+                return not_adviser_list.text
+            else:
+                return []
+        
+        # Consulta lista de conselheiros fiscais
+        is_adviser = True
+        adviser_list = get_request(f'/get-admin/{is_adviser}/4')
+
+        # remover secretário
+        if request.args.get('remove_id'):
+            if adviser_list.status_code == 200:
+                response = get_request(f'/remove-admin/{request.args.get("remove_id")}/4')
+                if response.status_code == 200:
+                    confirm = loads(response.text)
+                    if confirm['confirm'] == True:
+                        flash('Conselheiro fiscal removido.')
+                    else:
+                        flash('Algo deu errado.')
+                else:
+                    flash('Algo deu errado.')
+            else:
+                flash('Algo deu errado.')
+            return redirect('/painel-administrativo/conselho-fiscal')
+
+        # Lista de conselheiros fiscais para o front end
+        if adviser_list.status_code == 200:
+            user_list = loads(adviser_list.text)
+            for i, user in enumerate(user_list):
+                data = Simple_User(**user)
+                user_list[i] = data
+            return render_template('admin/conselho-fiscal.html', user_list = user_list)
+        else:
+            return render_template('admin/conselho-fiscal.html', user_list = [])
+    
+
+@app.route('/painel-administrativo/designers', methods=['GET', 'POST'])
+@login_required
+def designers():
+    # Verificando se o usuário é admin, caso não seja, retorna ao painel comum
+    try:
+        if current_user.is_admin == False:
+            return redirect('/painel')
+    except AttributeError:
+        return render_template('client/entrar.html')
+    except:
+        return render_template('client/entrar.html')
+
+    if request.method == 'POST':
+        # Cadastrando designer
+        if request.form.get('add_id'):
+            response = get_request(f'/include-admin/{request.form.get("add_id")}/5')
+            if response.status_code == 200:
+                confirm = loads(response.text)
+                if confirm['confirm'] == True:
+                    flash('Designer cadastrado.')
+                else:
+                    flash('Algo deu errado.')
+            else:
+                flash('Algo deu errado.')
+        else:
+            flash('Algo deu errado.')
+        return redirect('/painel-administrativo/designers')
+        
+    else:
+        # Endpoint para ajax buscar membros não designers para adicionar
+        if request.args.get('is_admin'):
+            is_designer = False
+            not_designer_list = get_request(f'/get-admin/{is_designer}/5')
+            if not_designer_list.status_code == 200:
+                return not_designer_list.text
+            else:
+                return []
+        
+        # Consulta lista de designers
+        is_designer = True
+        designer_list = get_request(f'/get-admin/{is_designer}/5')
+
+        # remover secretário
+        if request.args.get('remove_id'):
+            if designer_list.status_code == 200:
+                response = get_request(f'/remove-admin/{request.args.get("remove_id")}/5')
+                if response.status_code == 200:
+                    confirm = loads(response.text)
+                    if confirm['confirm'] == True:
+                        flash('Designer removido.')
+                    else:
+                        flash('Algo deu errado.')
+                else:
+                    flash('Algo deu errado.')
+            else:
+                flash('Algo deu errado.')
+            return redirect('/painel-administrativo/designers')
+
+        # Lista de designers para o front end
+        if designer_list.status_code == 200:
+            user_list = loads(designer_list.text)
+            for i, user in enumerate(user_list):
+                data = Simple_User(**user)
+                user_list[i] = data
+            return render_template('admin/designers.html', user_list = user_list)
+        else:
+            return render_template('admin/designers.html', user_list = [])

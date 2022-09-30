@@ -23,6 +23,9 @@
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end dropdown-menu-lg-start">
                         <li><a class="dropdown-item p-2" href="/painel">Painel do Membro</a></li>
+                        {% if current_user.is_admin == True %}
+                        <li><a class="dropdown-item p-2" href="/configuracoes">Configurações</a></li>
+                        {% endif %}
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item p-2" href="/logout">Sair</a></li>
                     </ul>
@@ -115,6 +118,38 @@
             <div class="adm-buttons">
                 <a href="/painel-administrativo/excluir-membro">
                     <button>Excluir</button>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="meusdados">
+        <div class="container dados">
+            <div class="data-title">
+                <p>Funções Administrativas</p>
+            </div>
+            <div class="adm-buttons">
+                <a href="/painel-administrativo/administradores">
+                    <button>Administradores</button>
+                </a>
+            </div>
+            <div class="adm-buttons">
+                <a href="/painel-administrativo/tesoureiros">
+                    <button>Tesoureiros</button>
+                </a>
+            </div>
+            <div class="adm-buttons">
+                <a href="/painel-administrativo/secretarios">
+                    <button>Secretarios</button>
+                </a>
+            </div>
+            <div class="adm-buttons">
+                <a href="/painel-administrativo/conselho-fiscal">
+                    <button>Conselho Fiscal</button>
+                </a>
+            </div>
+            <div class="adm-buttons">
+                <a href="/painel-administrativo/designers">
+                    <button>Designers</button>
                 </a>
             </div>
         </div>
