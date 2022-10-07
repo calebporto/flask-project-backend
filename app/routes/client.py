@@ -1,15 +1,16 @@
 from flask_login import current_user, login_user, logout_user, login_required
 from flask import render_template, request, flash, redirect, session
+from app.providers.decorators import designer_kick
 from app.providers.hash_provider import *
-from app.providers.requests import *
+from app.providers.functions import *
 from app.models.basemodels import *
+from datetime import timedelta
 from app.config import API_URL
 from datetime import datetime
 from app.models.user import *
 from typing import List
 from json import loads
 from app import app
-import requests
 
 @app.route('/home')
 @app.route('/')
@@ -65,7 +66,8 @@ def entrar():
             user = User(
                 response_data.id, response_data.name, 
                 response_data.email, response_data.hash, 
-                response_data.is_admin, response_data.is_designer)
+                response_data.is_admin, response_data.is_treasurer, 
+                response_data.is_secretary, response_data.is_adviser, response_data.is_designer)
             
             if not verify_password(request.form.get('senha'), user.hash):
                 flash('Senha Incorreta!')
@@ -79,14 +81,26 @@ def entrar():
                 if next is not None:
                     return redirect(next)
             
-            return redirect('/painel')
+            if user.is_designer == True:
+                return redirect('/home')
+            else:
+                return redirect('/painel')
         else:
             flash('Algo deu errado. Tente novamente mais tarde.')
             return redirect('/entrar')
     else:
         try:
-            if current_user.name:
+            # Impedindo designer de acessar painel
+            if current_user.name and current_user.is_designer == True:
+                flash('Você já está logado no sistema.')
+                return redirect('/home')
+            # Caso não seja designer e esteja logado, redireciona para o painel
+            elif current_user.name and current_user.is_designer == False:
                 return redirect('/painel')
+            else:
+            # Se não estiver logado, acessa a página entrar
+                return redirect ('/entrar')
+            
         except AttributeError:
             return render_template('client/entrar.html')
         except:
@@ -99,66 +113,34 @@ def logout():
     return redirect('/home')
 
 @app.route('/painel')
+@designer_kick
 @login_required
 def painel():
-    def get_title_list(tithe_list):
-        if tithe_list.text == 'null':
-            tithe_list_data = [Tithe_List]
-            flash('Algo deu errado.')
-        else:
-            tithe_list_dict = loads(tithe_list.text)
-            tithe_list_data = tithe_list_dict['tithe_list']
-            for i, linha in enumerate(tithe_list_data):
-                linha = Tithe_List(value=linha['value'], tithe_date=linha['tithe_date'], treasurer=linha['treasurer'])
-                linha.value = f'R$ {linha.value:,.2f}'
-                linha.tithe_date = (linha.tithe_date).strftime('%d/%m/%Y')
-                linha.treasurer = (linha.treasurer).title()
-                tithe_list_data[i] = linha
-        return tithe_list_data
-
-    def get_user_func(get_user):
-        if get_user.text == 'null':
-            user_data = User_With_Data
-            flash('Algo deu errado.')
-        else:
-            user_data = User_With_Data(**loads(get_user.text))
-            if user_data.gender == 'm':
-                user_data.gender = 'Masculino'
-            else:
-                user_data.gender = 'Feminino'
-            user_data.birth = (user_data.birth).strftime('%d/%m/%Y')
-            user_data.name = (user_data.name).title()
-            user_data.address = (user_data.address).title()
-            return user_data
-
-    get_user = get_request(f'/get-user-with-data/{current_user.id}')
-    time = 365
-    tithe_list = get_request(f'/tithe-list/{time}/{current_user.id}/2')
-
-    if get_user.status_code == 200 and tithe_list.status_code == 200:
-        user_data = get_user_func(get_user)
-        tithe_list_data = get_title_list(tithe_list)
-        return render_template('client/painel.html', user_data=user_data, tithe_list_data=tithe_list_data)
     
-    elif get_user.status_code == 200 and tithe_list.status_code != 200:
-        user_data = get_user_func(get_user)
-        tithe_list_data = [Tithe_List]
-        flash('Algo deu errado.')
-        return render_template('client/painel.html', user_data=user_data, tithe_list_data=tithe_list_data)
+    permissions, user_data, tithe_list_data, balance = None, None, None, None
 
-    elif get_user.status_code != 200 and tithe_list.status_code == 200:
-        user_data = User_With_Data
-        tithe_list_data = get_title_list(tithe_list)
-        flash('Algo deu errado.')
-        return render_template('client/painel.html', user_data=user_data, tithe_list_data=tithe_list_data)
-
+    permission_response = get_request('/get-permissions/painel')
+    if permission_response.status_code == 200:
+        if permission_response.text != 'null':
+            permissions = Permission(**loads(permission_response.text))
+            if permissions.permission1 == True:
+                balance = get_balance()
+            if permissions.permission4 == True:
+                get_user = get_request(f'/get-user-with-data/{current_user.id}')
+                user_data = get_user_func(get_user)
+            if permissions.permission6 == True:
+                tithe_list = get_request(f'/tithe-list/365/{current_user.id}/2')
+                tithe_list_data = get_title_list(tithe_list)
+        else:
+            flash('Erro no carregamento dos dados')
     else:
-        user_data = User_With_Data
-        tithe_list_data = Tithe_List
-        flash('Algo deu errado')
-        return render_template('client/painel.html', user_data=user_data, tithe_list_data=tithe_list_data)
+        flash('Erro no carregamento dos dados')
+    
+    return render_template('client/painel.html', permissions=permissions, user_data=user_data, tithe_list_data=tithe_list_data, balance=balance)
 
 @app.route('/painel/alterar-dados', methods=['POST'])
+@designer_kick
+@login_required
 def post_user_update():
     user = User_Update(id=request.form['id'])
     user.name = request.form['nome'].lower() if request.form['nome'] else None
@@ -187,8 +169,9 @@ def post_user_update():
         return redirect('/painel')
 
 @app.route('/painel/alterar-dados/<user_id>', methods=['GET'])
+@designer_kick
+@login_required
 def get_user_update(user_id: int):
-        
     get_user = get_request(f'/get-user-with-data/{user_id}')
     if get_user.text == 'null':
         user_data = User_With_Data
@@ -200,5 +183,65 @@ def get_user_update(user_id: int):
             user_data.gender = 'Masculino'
         else:
             user_data.gender = 'Feminino'
+        print(user_data.birth)
         user_data.birth = (user_data.birth).strftime('%d/%m/%Y')
         return render_template('client/alterar-dados.html', user_data=user_data)
+
+@app.route('/painel/relatorios-financeiros')
+@login_required
+def relatorios_financeiros_client():
+    try:
+        start = date(date.today().year, date.today().month, 1) - timedelta(days=366)
+        end = date.today()
+        response = get_request(f'/finance-list/{start}/{end}')
+        if response.status_code == 200:
+            if response.text != 'null':
+                finance_list = loads(response.text)
+                for i, item in enumerate(finance_list):
+                    start = (datetime.strptime(item['start'], '%Y-%m-%d'))
+                    ref = f'{str(start.month).rjust(2, "0")}/{start.year}'
+                    entry = (((f'R$ {item["entry"]:,.2f}').replace(',','v')).replace('.',',')).replace('v','.')
+                    issues = (((f'R$ {item["issues"]:,.2f}').replace(',','v')).replace('.',',')).replace('v','.')
+                    period_balance = (((f'R$ {item["period_balance"]:,.2f}').replace(',','v')).replace('.',',')).replace('v','.')
+                    total_balance = (((f'R$ {item["total_balance"]:,.2f}').replace(',','v')).replace('.',',')).replace('v','.')
+                    data = History_Finance(
+                        ref=ref,
+                        entry=entry,
+                        issues=issues,
+                        period_balance=period_balance,
+                        total_balance=total_balance
+                    )
+                    finance_list[i] = data
+            else:
+                flash('Algo deu errado.')
+                return redirect('/painel')    
+            return render_template('client/relatorios-financeiros.html', finance_list=finance_list)
+        else:
+            flash('Algo deu errado.')
+            return redirect('/painel')
+    except Exception as error:
+        print(str(error))
+        flash('Algo deu errado.')
+        return redirect('/painel')
+
+@app.route('/painel/rol-de-membros')
+@login_required
+def rol_de_membros_client():
+    try:
+        response = get_request('/user-list')
+        if response.status_code == 200:
+            if response.text != 'null':
+                userlist = loads(response.text)
+                for i, user in enumerate(userlist):
+                    userlist[i] = Simple_User(**user)
+                return render_template('client/rol-de-membros.html', userlist=userlist)
+            else:
+                flash('Algo deu errado')
+                return redirect('/painel')    
+        else:
+            flash('Algo deu errado')
+            return redirect('/painel')
+    except Exception as error:
+        print(str(error))
+        flash('Algo deu errado')
+        return redirect('/painel')

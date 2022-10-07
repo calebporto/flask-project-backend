@@ -26,6 +26,9 @@ class User_Loader(BaseModel):
     email: str
     hash: str
     is_admin: bool
+    is_treasurer: bool
+    is_secretary: bool
+    is_adviser: bool
     is_designer: bool
 
 class UserAdd(BaseModel):
@@ -117,3 +120,17 @@ class History_Finance(BaseModel):
     issues: str
     period_balance: str
     total_balance: str
+
+class Permission(BaseModel):
+    id: Optional[int]
+    name: Optional[str]
+    permission1: Optional[bool]
+    permission2: Optional[bool]
+    permission3: Optional[bool]
+    permission4: Optional[bool]
+    permission5: Optional[bool]
+    permission6: Optional[bool]
+    permission7: Optional[bool]
+    permission8: Optional[bool]
+    permission9: Optional[bool]
+    permission10: Optional[bool]

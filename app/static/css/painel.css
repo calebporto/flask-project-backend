@@ -111,6 +111,26 @@
 .data-title p {
     margin: auto;
 }
+.saldo {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+}
+.saldomes p, .saldototal p {
+    font-size: 40px;
+    font-weight: bold;
+    padding: 12px;
+    padding-left: 20px;
+    padding-right: 20px;
+    border-radius: 10px;
+    margin-top: 0.7rem;
+    border: 2px dotted rgb(82, 8, 8);
+}
+.saldomes label, .saldototal label {
+    font-weight: bold;
+    font-size: 20px;
+    color: rgb(82, 8, 8);
+}
 .data-items {
     display: flex;
     align-items: center;
@@ -224,6 +244,37 @@ thead {
     top: 100%;
     transform: translateY(100%); 
 }
+.adm-buttons button {
+    margin-top: 20px;
+    width: 100%;
+    padding: 10px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    color: black;
+    background: linear-gradient(rgb(133, 131, 0), rgb(219, 243, 112));
+    border-radius: 15px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0px 5px 2px rgb(59, 41, 41);
+}
+.adm-buttons button:hover {
+    width: 100%;
+    padding: 10px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    color: white;
+    background: linear-gradient(rgb(83, 82, 0), rgb(158, 175, 80));
+    border-radius: 15px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0px 5px 2px rgb(59, 41, 41);
+}
+.adm-buttons button:active {
+    box-shadow: 0px 2px 2px rgb(59, 41, 41);
+    position: relative;
+    top: 3px;
+}
+
 @media (max-width: 768px) {
     .header {
         height: 60px;
@@ -252,6 +303,12 @@ thead {
         width: 100%;
         font-size: 20px;
     }
+    .saldomes p, .saldototal p {
+        font-size: 15px;
+    }
+    .saldomes label, .saldototal label {
+        font-size: 10px;
+    }
     .data-items {
         flex-direction: column;
         font-size: 13px;
@@ -262,6 +319,10 @@ thead {
     }
     .alterar button:hover {
         background: linear-gradient(rgb(82, 8, 8), black);
+    }
+    .adm-buttons button:hover {
+    background: linear-gradient(rgb(133, 131, 0), rgb(219, 243, 112));
+    color: black;
     }
 }
 @media (max-width: 400px) {

@@ -24,7 +24,7 @@
                     <ul class="dropdown-menu dropdown-menu-end dropdown-menu-lg-start">
                         <li><a class="dropdown-item p-2" href="/painel">Painel do Membro</a></li>
                         {% if current_user.is_admin == True %}
-                        <li><a class="dropdown-item p-2" href="/configuracoes">Configurações</a></li>
+                        <li><a class="dropdown-item p-2" href="/painel-administrativo/configuracoes">Configurações</a></li>
                         {% endif %}
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item p-2" href="/logout">Sair</a></li>
@@ -57,6 +57,7 @@
             <div class="data-title">
                 <p>Tesouraria</p>
             </div>
+            {% if current_user.is_treasurer %}
             <div class="adm-buttons">
                 <a href="/painel-administrativo/entradas">
                     <button>Registrar Entradas</button>
@@ -67,6 +68,7 @@
                     <button>Registrar Saídas</button>
                 </a>
             </div>
+            {% endif %}
             <div class="adm-buttons">
                 <a href="/painel-administrativo/historico-de-dizimos">
                     <button>Histórico de Dízimos</button>
@@ -100,6 +102,7 @@
                     <button>Lista de Membros</button>
                 </a>
             </div>
+            {% if current_user.is_secretary %}
             <div class="adm-buttons">
                 <a href="/painel-administrativo/lista-de-espera">
                     <button>Aguardando Aprovação <span class="waiting">{{ waiting_list_size }}</span></button>
@@ -120,8 +123,10 @@
                     <button>Excluir</button>
                 </a>
             </div>
+            {% endif %}
         </div>
     </div>
+    {% if current_user.is_admin %}
     <div class="meusdados">
         <div class="container dados">
             <div class="data-title">
@@ -154,6 +159,7 @@
             </div>
         </div>
     </div>
+    {% endif %}
     <div class="rodape">
         <div class="redes-sociais">
             <div class="container h-100">

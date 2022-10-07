@@ -22,7 +22,7 @@
                         {{ ((current_user.name).strip().split(' ')[0]).title() }}
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end dropdown-menu-lg-start">
-                        {% if current_user.is_admin %}
+                        {% if current_user.is_admin or current_user.is_treasurer or current_user.is_secretary or current_user.is_adviser %}
                         <li><a class="dropdown-item p-2" href="/painel-administrativo">Painel Administrativo</a></li>
                         <li><hr class="dropdown-divider"></li>
                         {% endif %}
@@ -32,6 +32,36 @@
             </div>
         </div>
     </div>
+    {% if permissions %}
+    {% if not permissions.permission1 and not permissions.permission2 and not permissions.permission3 and not permissions.permission4 and not permissions.permission6 %}
+    <div class="meusdados">
+        <div class="container dados">
+            <div class="data-title">
+                <p>Não há dados a serem mostrados.</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% if permissions.permission1 %}
+    <div class="meusdados">
+        <div class="container dados">
+            <div class="data-title">
+                <p>Caixa da Igreja</p>
+            </div>
+            <div class="saldo">
+                <div class="saldomes">
+                    <label for="valor">Saldo do Mês</label>
+                    <p name="valor">{{ balance.period_balance }}</p>
+                </div>
+                <div class="saldototal">
+                    <label for="valor">Total em Caixa</label>
+                    <p name="valor">{{ balance.total_balance }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% if permissions.permission4 %}
     <div class="meusdados">
         <div class="container dados">
             {% set message = get_flashed_messages()[0] %}
@@ -77,13 +107,17 @@
                     <p class="value">{{ user_data.address }}</p>
                 </div>
             </div>
+            {% if permissions.permission5 %}
             <div class="alterar">
                 <a href="/painel/alterar-dados/{{ current_user.id }}">
                     <button type="submit">Alterar Dados</button>
                 </a>
             </div>
+            {% endif %}
         </div>
     </div>
+    {% endif %}
+    {% if permissions.permission6 %}
     <div class="meusdados">
         <div class="container dados">
             <div class="data-title">
@@ -109,6 +143,37 @@
             </table>
         </div>
     </div>
+    {% endif %}
+    {% if permissions.permission2 or permissions.permission3 %}
+    <div class="meusdados">
+        <div class="container dados">
+            {% if permissions.permission2 %}
+            <div class="adm-buttons">
+                <a href="/painel/relatorios-financeiros">
+                    <button>Relatórios Financeiros</button>
+                </a>
+            </div>
+            {% endif %}
+            {% if permissions.permission3 %}
+            <div class="adm-buttons">
+                <a href="/painel/rol-de-membros">
+                    <button>Rol de Membros</button>
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+    {% else %}
+    <div class="meusdados">
+        <div class="container dados">
+            {% set message = get_flashed_messages()[0] %}
+            {% if message %}
+            <div class="alert">{{ message }}</div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
     <div class="rodape">
         <div class="redes-sociais">
             <div class="container h-100">

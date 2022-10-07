@@ -1,29 +1,22 @@
 from flask import redirect, render_template, request, flash
 from app.providers.hash_provider import get_password_hash
-from app.providers.requests import *
 from flask_login import login_required, current_user
 from app.models.basemodels import User_With_Data
 from datetime import datetime, date, timedelta
+from app.providers.decorators import *
 from http.client import HTTPException
+from app.providers.functions import *
 from app.models.basemodels import *
 from app.config import API_URL
 from json import loads
 from app import app
-import requests
 import json
 
 
 @app.route('/painel-administrativo/')
+@all_admin_permission
 @login_required
 def painel_administrativo():
-    try:
-        if current_user.is_admin == False:
-            return redirect('/painel')
-    except AttributeError:
-        return render_template('client/entrar.html')
-    except:
-        return 'Erro Inesperado'
-
     start = date(date.today().year, date.today().month, 1)
     end = date.today()
     balance_response = get_request(f'/finance-values/{start}/{end}')
@@ -47,17 +40,42 @@ def painel_administrativo():
         period_balance=period_balance,
         total_balance=total_balance)
 
+@app.route('/painel-administrativo/configuracoes', methods=['GET', 'POST'])
+@admin_permission
+@login_required
+def configuracoes():
+    '''
+    permission1 -> Mostrar caixa da igreja
+    permission2 -> Mostrar relatórios financeiros
+    permission3 -> Mostrar rol de membros
+    permission4 -> Mostrar dados cadastrais
+    permission5 -> Permitir alteração dos dados cadastrais
+    permission6 -> Mostrar dízimos do membro
+    '''
+    if request.method == 'POST':
+        for i in range(1,7):
+            if update_permissions(f'permission{i}'):
+                flash('Alteração concluída com sucesso.')
+                return redirect('/painel-administrativo/configuracoes')
+        flash('Algo deu errado.')        
+        return redirect('/painel-administrativo/configuracoes')
+    else:
+        painel_response = get_request('/get-permissions/painel')
+        if painel_response.status_code == 200:
+            if painel_response.text != 'null':
+                permissions = Permission(**loads(painel_response.text))
+            else:
+                flash('Algo deu errado')
+                return redirect('/painel-administrativo')    
+        else:
+            flash('Algo deu errado')
+            return redirect('/painel-administrativo')
+        return render_template('admin/configuracoes.html', permissions=permissions)
+
 @app.route('/painel-administrativo/entradas', methods=['GET', 'POST'])
+@treasurer_permission
 @login_required
 def entradas():
-    try:
-        if current_user.is_admin == False:
-            return redirect('/painel')
-    except AttributeError:
-        return render_template('client/entrar.html')
-    except:
-        return 'Erro Inesperado'
-
     if request.method == 'POST':
         try:
             treasurer_id = int(request.form.get('treasurer_id'))
@@ -147,16 +165,9 @@ def entradas():
             return HTTPException(400, detail=str(error))
 
 @app.route('/painel-administrativo/saidas', methods=['GET', 'POST'])
+@treasurer_permission
 @login_required
-def saidas():
-    try:
-        if current_user.is_admin == False:
-            return redirect('/painel')
-    except AttributeError:
-        return render_template('client/entrar.html')
-    except:
-        return 'Erro Inesperado'
-    
+def saidas(): 
     if request.method == 'POST':
         try:
             request_value = request.form.get('valor').replace('.', '')
@@ -194,16 +205,9 @@ def saidas():
         return render_template('admin/saidas.html')
 
 @app.route('/painel-administrativo/historico-de-dizimos')
+@all_admin_permission
 @login_required
 def historico_de_dizimos():
-    try:
-        if current_user.is_admin == False:
-            return redirect('/painel')
-    except AttributeError:
-        return render_template('client/entrar.html')
-    except:
-        return 'Erro Inesperado'
-
     periodo_select = '-- Mês atual --'
 
     if request.args.get('time'):
@@ -239,16 +243,9 @@ def historico_de_dizimos():
     return render_template('admin/historico-de-dizimos.html', tithe_list=tithe_list, periodo_select=periodo_select)
 
 @app.route('/painel-administrativo/historico-de-ofertas')
+@all_admin_permission
 @login_required
 def historico_de_ofertas():
-    try:
-        if current_user.is_admin == False:
-            return redirect('/painel')
-    except AttributeError:
-        return render_template('client/entrar.html')
-    except:
-        return 'Erro Inesperado'
-
     periodo_select = '-- Mês atual --'
 
     if request.args.get('time'):
@@ -282,16 +279,9 @@ def historico_de_ofertas():
     return render_template('admin/historico-de-ofertas.html', offer_list=offer_list, periodo_select=periodo_select)
 
 @app.route('/painel-administrativo/historico-de-despesas')
+@all_admin_permission
 @login_required
 def historico_de_despesas():
-    try:
-        if current_user.is_admin == False:
-            return redirect('/painel')
-    except AttributeError:
-        return render_template('client/entrar.html')
-    except:
-        return 'Erro Inesperado'
-
     periodo_select = '-- Mês atual --'
 
     if request.args.get('time'):
@@ -326,52 +316,47 @@ def historico_de_despesas():
     return render_template('admin/historico-de-despesas.html', expense_list=expense_list, periodo_select=periodo_select)
 
 @app.route('/painel-administrativo/relatorios-financeiros')
+@all_admin_permission
 @login_required
 def relatorios_financeiros():
-    try:
-        if current_user.is_admin == False:
-            return redirect('/painel')
-    except AttributeError:
-        return render_template('client/entrar.html')
-    except:
-        return 'Erro Inesperado'
-
     try:
         start = date(date.today().year, date.today().month, 1) - timedelta(days=366)
         end = date.today()
         response = get_request(f'/finance-list/{start}/{end}')
         if response.status_code == 200:
-            finance_list = loads(response.text)
-            for i, item in enumerate(finance_list):
-                start = (datetime.strptime(item['start'], '%Y-%m-%d'))
-                ref = f'{str(start.month).rjust(2, "0")}/{start.year}'
-                entry = (((f'R$ {item["entry"]:,.2f}').replace(',','v')).replace('.',',')).replace('v','.')
-                issues = (((f'R$ {item["issues"]:,.2f}').replace(',','v')).replace('.',',')).replace('v','.')
-                period_balance = (((f'R$ {item["period_balance"]:,.2f}').replace(',','v')).replace('.',',')).replace('v','.')
-                total_balance = (((f'R$ {item["total_balance"]:,.2f}').replace(',','v')).replace('.',',')).replace('v','.')
-                data = History_Finance(
-                    ref=ref,
-                    entry=entry,
-                    issues=issues,
-                    period_balance=period_balance,
-                    total_balance=total_balance
-                )
-                finance_list[i] = data
-            return render_template('admin/relatorios-financeiros.html', finance_list=finance_list)        
-        return render_template('admin/relatorios-financeiros.html', finance_list=finance_list)
-    except:
-        return render_template('admin/relatorios-financeiros.html', finance_list=finance_list)
+            if response.text != 'null':
+                finance_list = loads(response.text)
+                for i, item in enumerate(finance_list):
+                    start = (datetime.strptime(item['start'], '%Y-%m-%d'))
+                    ref = f'{str(start.month).rjust(2, "0")}/{start.year}'
+                    entry = (((f'R$ {item["entry"]:,.2f}').replace(',','v')).replace('.',',')).replace('v','.')
+                    issues = (((f'R$ {item["issues"]:,.2f}').replace(',','v')).replace('.',',')).replace('v','.')
+                    period_balance = (((f'R$ {item["period_balance"]:,.2f}').replace(',','v')).replace('.',',')).replace('v','.')
+                    total_balance = (((f'R$ {item["total_balance"]:,.2f}').replace(',','v')).replace('.',',')).replace('v','.')
+                    data = History_Finance(
+                        ref=ref,
+                        entry=entry,
+                        issues=issues,
+                        period_balance=period_balance,
+                        total_balance=total_balance
+                    )
+                    finance_list[i] = data
+            else:
+                flash('Algo deu errado.')
+                return redirect('/painel-administrativo')    
+            return render_template('admin/relatorios-financeiros.html', finance_list=finance_list)
+        else:
+            flash('Algo deu errado.')
+            return redirect('/painel-administrativo')
+    except Exception as error:
+        print(str(error))
+        flash('Algo deu errado.')
+        return redirect('/painel-administrativo')
 
 @app.route('/painel-administrativo/lista-de-membros')
+@all_admin_permission
 @login_required
 def lista_de_membros():
-    try:
-        if current_user.is_admin == False:
-            return redirect('/painel')
-    except AttributeError:
-        return render_template('client/entrar.html')
-    except:
-        return 'Erro Inesperado'
     try:
         response = get_request('/user-list')
         if response.status_code == 200:
@@ -386,16 +371,9 @@ def lista_de_membros():
         return HTTPException(400, detail=str(error))
 
 @app.route('/painel-administrativo/lista-de-membros/detalhes')
+@all_admin_permission
 @login_required
 def detalhes():
-    try:
-        if current_user.is_admin == False:
-            return redirect('/painel')
-    except AttributeError:
-        return render_template('client/entrar.html')
-    except:
-        return 'Erro Inesperado'
-
     try:
         user_response = get_request(f'/get-user-with-data/{int(request.args.get("user_id"))}')
         tithe_response = get_request(f'/tithe-list/365/{int(request.args.get("user_id"))}/2')
@@ -435,15 +413,9 @@ def detalhes():
         return redirect('/painel-administrativo')
 
 @app.route('/painel-administrativo/lista-de-espera', methods=['GET', 'POST'])
+@secretary_permission
 @login_required
 def lista_de_espera():
-    try:
-        if current_user.is_admin == False:
-            return redirect('/painel')
-    except AttributeError:
-        return render_template('client/entrar.html')
-    except:
-        return 'Erro Inesperado'
     if request.method == 'POST':
         if request.form.get('action') == 'accept':
             send = Add_User(
@@ -502,16 +474,9 @@ def lista_de_espera():
         return render_template('admin/lista-de-espera.html', waiting_list=waiting_list)
 
 @app.route('/painel-administrativo/adicionar-membro', methods=['GET', 'POST'])
+@secretary_permission
 @login_required
 def adicionar_membro():
-    try:
-        if current_user.is_admin == False:
-            return redirect('/painel')
-    except AttributeError:
-        return render_template('client/entrar.html')
-    except:
-        return render_template('client/entrar.html')
-
     if request.method == 'POST':
         address = f'{request.form.get("logradouro")} {request.form.get("numero")}, {request.form.get("bairro")}, {request.form.get("cidade")} - {request.form.get("uf")}'
         senha = get_password_hash(request.form.get('senha'))
@@ -547,15 +512,9 @@ def adicionar_membro():
         return render_template('admin/adicionar-membro.html')
 
 @app.route('/painel-administrativo/alterar-cadastro', methods=['GET', 'POST'])
+@secretary_permission
 @login_required
 def alterar_cadastro():
-    try:
-        if current_user.is_admin == False:
-            return redirect('/painel')
-    except AttributeError:
-        return render_template('client/entrar.html')
-    except:
-        return render_template('client/entrar.html')
     if request.method == 'POST':
         send = User_Update(
             id = request.form.get('selecionar'),
@@ -586,6 +545,7 @@ def alterar_cadastro():
             return HTTPException(400, detail=str(error))
 
 @app.route('/get-user-data/<user_id>') # Api para Ajax
+@secretary_permission
 @login_required
 def get_user_data(user_id):
     try:
@@ -601,16 +561,9 @@ def get_user_data(user_id):
         return HTTPException(400, detail=str(error))
 
 @app.route('/painel-administrativo/excluir-membro', methods=['GET', 'POST'])
+@secretary_permission
 @login_required
-def excluir_membro():
-    try:
-        if current_user.is_admin == False:
-            return redirect('/painel')
-    except AttributeError:
-        return render_template('client/entrar.html')
-    except:
-        return render_template('client/entrar.html')
-    
+def excluir_membro():  
     if request.method == 'POST':
         response = delete_request(f'/delete-user/{int(request.form.get("user_id"))}')
         if response.status_code == 200:
@@ -635,16 +588,9 @@ def excluir_membro():
             return HTTPException(400, detail=str(error))
         
 @app.route('/painel-administrativo/administradores', methods=['GET', 'POST'])
+@admin_permission
 @login_required
-def administradores():
-    try:
-        if current_user.is_admin == False:
-            return redirect('/painel')
-    except AttributeError:
-        return render_template('client/entrar.html')
-    except:
-        return render_template('client/entrar.html')
-    
+def administradores():   
     if request.method == 'POST':
         if request.form.get('add_id'):
             response = get_request(f'/include-admin/{request.form.get("add_id")}/1')
@@ -700,19 +646,10 @@ def administradores():
         else:
             return render_template('admin/administradores.html', user_list = [])
 
-
 @app.route('/painel-administrativo/tesoureiros', methods=['GET', 'POST'])
+@admin_permission
 @login_required
 def tesoureiros():
-    # Verificando se o usuário é administrador, caso não seja, retorna ao painel comum
-    try:
-        if current_user.is_admin == False:
-            return redirect('/painel')
-    except AttributeError:
-        return render_template('client/entrar.html')
-    except:
-        return render_template('client/entrar.html')
-
     if request.method == 'POST':
         # Cadastrando tesoureiro
         if request.form.get('add_id'):
@@ -769,19 +706,10 @@ def tesoureiros():
         else:
             return render_template('admin/tesoureiros.html', user_list = [])
     
-
 @app.route('/painel-administrativo/secretarios', methods=['GET', 'POST'])
+@admin_permission
 @login_required
 def secretarios():
-    # Verificando se o usuário é administrador, caso não seja, retorna ao painel comum
-    try:
-        if current_user.is_admin == False:
-            return redirect('/painel')
-    except AttributeError:
-        return render_template('client/entrar.html')
-    except:
-        return render_template('client/entrar.html')
-
     if request.method == 'POST':
         # Cadastrando secretario
         if request.form.get('add_id'):
@@ -839,17 +767,9 @@ def secretarios():
             return render_template('admin/secretarios.html', user_list = [])
     
 @app.route('/painel-administrativo/conselho-fiscal', methods=['GET', 'POST'])
+@admin_permission
 @login_required
 def conselho_fiscal():
-    # Verificando se o usuário é administrador, caso não seja, retorna ao painel comum
-    try:
-        if current_user.is_admin == False:
-            return redirect('/painel')
-    except AttributeError:
-        return render_template('client/entrar.html')
-    except:
-        return render_template('client/entrar.html')
-
     if request.method == 'POST':
         # Cadastrando conselheiro fiscal
         if request.form.get('add_id'):
@@ -906,19 +826,10 @@ def conselho_fiscal():
         else:
             return render_template('admin/conselho-fiscal.html', user_list = [])
     
-
 @app.route('/painel-administrativo/designers', methods=['GET', 'POST'])
+@admin_permission
 @login_required
 def designers():
-    # Verificando se o usuário é admin, caso não seja, retorna ao painel comum
-    try:
-        if current_user.is_admin == False:
-            return redirect('/painel')
-    except AttributeError:
-        return render_template('client/entrar.html')
-    except:
-        return render_template('client/entrar.html')
-
     if request.method == 'POST':
         # Cadastrando designer
         if request.form.get('add_id'):

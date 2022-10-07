@@ -20,7 +20,11 @@
                         {{ ((current_user.name).strip().split(' ')[0]).title() }}
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end dropdown-menu-lg-start">
+                        {% if current_user.is_designer == True %}
+                        <li><a class="dropdown-item p-2" href="/editar-design">Editar Plataforma</a></li>
+                        {% else %}
                         <li><a class="dropdown-item p-2" href="/painel">Painel do Membro</a></li>
+                        {% endif %}
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item p-2" href="/logout">Sair</a></li>
                     </ul>

@@ -1,0 +1,306 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@100;200;300;400;500;600;700;800;900&display=swap');
+* {
+    padding: 0;
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    box-sizing: border-box;
+}
+.header {
+    background: linear-gradient(rgb(82, 8, 8), black);
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    height: 100px;
+    margin-top: 10px;
+    -webkit-box-shadow: 0px 7px 5px rgba(50, 50, 50, 0.77);
+    -moz-box-shadow:    0px 7px 5px rgba(50, 50, 50, 0.77);
+    box-shadow:         0px 7px 5px rgba(50, 50, 50, 0.77);
+}
+.container-header {
+    display: flex;
+    justify-content: space-between;
+    margin-left: auto;
+    margin-right: auto;
+}
+.logo {
+    width: 25%;
+    height: 100%;
+    display: flex;
+    justify-content: flex-start;
+    text-align: center;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+.img {
+    height: 100%;
+    width: auto;
+}
+.title {
+    font-family: 'League Spartan', sans-serif;
+    font-size: 40px;
+    font-weight: bold;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    color: white;
+    width: 50%;
+    height: 100%;
+}
+.title a {
+    text-decoration: none;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    color: white;
+    cursor: pointer;
+}
+.title a:hover {
+    color: white;
+}
+.title p {
+    margin: auto;
+}
+.button {
+    height: 100%;
+    width: 25%;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    display: flex;
+    justify-content: flex-end;
+    text-align: center;
+}
+.voltar {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+}
+.container-voltar {
+    width: 60%;
+    display: flex;
+    justify-content: flex-start;
+}
+.container-voltar a {
+    width: 20%;
+}
+.container-voltar button {
+    border-radius: 5px;
+    width: 100%;
+    border: none;
+    color: white;
+    background: linear-gradient(rgb(82, 8, 8), black);
+    cursor: pointer;
+    box-shadow: 0px 3px 2px rgb(59, 41, 41);
+}
+.container-voltar button:hover {
+    background: linear-gradient(rgb(187, 21, 21), rgb(41, 41, 41));
+}
+.container-voltar button:active {
+    box-shadow: 0px 1px 2px rgb(59, 41, 41);
+    position: relative;
+    top: 2px;
+}
+.meusdados {
+    margin-top: 6rem;
+}
+.container.dados {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    flex-direction: column;
+    width: 60%;
+    height: auto;
+    border-radius: 10px;
+    border: 2px solid rgb(78, 4, 4);
+    box-shadow: 0px 7px 8px rgba(50, 50, 50, 0.77);
+    padding: 15px;
+}
+.alert {
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    width: 100%;
+    height: auto;
+    font-size: 20px;
+    font-weight: bold;
+    margin: auto;
+    margin-bottom: 15px;
+    background-color: yellow;
+    color: black;
+    padding: 10px;
+}
+.alert p {
+    margin: auto;
+}
+.data-title {
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    width: 60%;
+    height: auto;
+    font-size: 30px;
+    font-weight: bold;
+    margin: auto;
+    margin-bottom: 40px;
+    border-radius: 10px;
+    background: linear-gradient(rgb(82, 8, 8), black);
+    color: white;
+    padding: 10px;
+}
+.data-title p {
+    margin: auto;
+}
+.config-item {
+    width: 100%;
+    text-align: center;
+}
+.config-item-title {
+    padding: 10px;
+    width: 100%;
+    display: flex;
+    justify-content: start;
+    font-weight: bold;
+    margin: auto;
+}
+.config-item-title p {
+    color: white;
+    padding: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-radius: 5px;
+    background: linear-gradient(rgb(161, 16, 16), black);
+    margin: 0;
+}
+.config-item form {
+    padding: 10px;
+    border-radius: 10px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    border: 1px dotted black;
+    margin: auto;
+    margin-top: 15px;
+}
+.config-button-active, .config-button-inactive {
+    width: 25%;
+    padding-left: 5px;
+    padding-right: 5px;
+    border: none;
+    border-radius: 20px;
+    color: white;
+    font-weight: bold;
+    font-size: small;
+    background: linear-gradient(rgb(161, 16, 16), black);
+    cursor: pointer;
+    box-shadow: 0px 3px 2px rgb(59, 41, 41);
+}
+.config-button-active:hover, .config-button-inactive:hover {
+    background: linear-gradient(rgb(187, 21, 21), rgb(41, 41, 41));
+}
+.config-button-active:active, .config-button-inactive:active {
+    box-shadow: 0px 1px 2px rgb(59, 41, 41);
+    position: relative;
+    top: 2px;
+}
+.config-button-inactive {
+    background: none;
+    background-color: rgb(194, 193, 193);
+    color: black;
+}
+.config-button-inactive:hover {
+    background: none;
+    background-color: rgb(241, 239, 239);
+    color: black;
+}
+.rodape {
+    background-color: rgb(102, 31, 31);
+    height: 15rem;
+    margin-top: 50px;
+    padding-bottom: 3rem;
+}
+.redes-sociais {
+    height: 40%;
+    background-color: rgba(255, 255, 255, 0.192);
+}
+.container.h-100 {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    padding: 4px;
+}
+.insta-logo {
+    height: 100%;
+    width: auto;
+}
+.rodape-text {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    flex-wrap: wrap;
+}
+.rodape-text1 {
+    width: 100%;
+    margin-bottom: 0;
+    color: white;
+    position: relative;
+    top: 100%;
+    transform: translateY(100%); 
+}
+.rodape-text2 {
+    width: 100%;
+    color: white;
+    font-weight: bold;
+    position: relative;
+    top: 100%;
+    transform: translateY(100%); 
+}
+
+@media (max-width: 768px) {
+    .meusdados {
+        margin-top: 2rem;
+    }
+    .container-voltar {
+        width: 90%;
+    }
+    .container-voltar button:hover {
+        background: linear-gradient(rgb(82, 8, 8), black);
+    }
+    .container.dados {
+        width: 90%;
+    }
+    .title {
+        font-size: 16px;
+    }
+    .data-title {
+        width: 80%;
+        font-size: 18px;
+    }
+    .config-item {
+        font-size: 10px;
+    }
+    .config-button-active, .config-button-inactive {
+        font-size: 10px;
+    }
+}
+@media (max-width: 300px) {
+    .img {
+        height: 80%;
+    }
+    .title {
+        font-size: 12px;
+    }
+    .voltar {
+        font-size: 10px;
+    }
+    .config-item {
+        font-size: 8px;
+    }
+    .config-button-active, .config-button-inactive {
+        width: 30%;
+        font-size: 8px;
+    }
+}
