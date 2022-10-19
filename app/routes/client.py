@@ -1,5 +1,7 @@
 from flask_login import current_user, login_user, logout_user, login_required
 from flask import render_template, request, flash, redirect, session
+from app.providers.send_email_gmail import redefinir_senha_email
+from app.providers.keypass_services import keypass_generator
 from app.providers.decorators import designer_kick
 from app.providers.hash_provider import *
 from app.providers.functions import *
@@ -73,7 +75,12 @@ def entrar():
                 flash('Senha Incorreta!')
                 return redirect('/entrar')
             
-            login_user(user, remember=True)
+            if request.form.get('lembrar-me') == 'on':
+                print('on')
+                login_user(user, remember=True, duration=timedelta(weeks=4))
+            else:
+                print('off')
+                login_user(user)
 
             if 'next' in session:
                 next = session['next']
@@ -106,6 +113,160 @@ def entrar():
         except:
             return 'Erro Inesperado'
 
+@app.route('/recuperar-senha')
+def recuperar_senha():
+    
+    if request.args.get('email'):
+        send = Get_User(
+            email=request.args.get('email')
+        )
+        response = post_request('/get-user', send.json())
+        if response.status_code == 200:
+            if response.text != 'null':
+                user = Get_User(**loads(response.text))
+                keypass = keypass_generator()
+                send = Password_Recovery_Data(
+                    user_id=user.id,
+                    key_datetime=datetime.now(),
+                    key=keypass
+                )
+                response = post_request('/keypass-registrer', send.json())
+                if response.status_code == 200:
+                    if loads(response.text)['confirm'] == True:
+                        receiver_list = user.email
+                        subject = 'IBVG - Redefinição de Senha'
+                        token = keypass
+                        redefinir_senha_email(receiver_list, subject, token)
+                        flash('''
+                        Para redefinir a sua senha, acesse o seu e-mail e siga as instruções
+                        no e-mail recebido. Caso você não encontre o e-mail na sua caixa de entrada, 
+                        verifique na sua caixa de spam. Se não encontrar, envie novamente.''')
+                        if request.args.get('type'):
+                            return redirect('/painel')
+                        else:
+                            return redirect('/recuperar-senha')
+                    else:
+                        flash('Algo deu errado.')
+                        return redirect('/recuperar-senha')    
+                else:
+                    flash('Algo deu errado.')
+                    return redirect('/recuperar-senha')
+            else:
+                flash('E-mail inválido.')
+                return redirect('/recuperar-senha')
+        else:
+            flash('Algo deu errado')
+            return redirect('/recuperar-senha')
+    else:
+        try:
+            # Impedindo designer de acessar painel
+            if current_user.name and current_user.is_designer == True:
+                flash('Você deve fazer logout primeiro.')
+                return redirect('/home')
+            # Caso não seja designer e esteja logado, redireciona para o painel
+            elif current_user.name and current_user.is_designer == False:
+                flash('Você deve sair do seu login de usuário primeiro.')
+                return redirect('/painel')
+            
+        except AttributeError:
+            pass
+        except:
+            return 'Erro Inesperado'
+        return render_template('client/recuperar-senha.html')
+
+@app.route('/recuperar-senha/nova-senha', methods=['GET', 'POST'])
+def nova_senha():
+    try:
+        # Impedindo designer de acessar painel
+        if current_user.name and current_user.is_designer == True:
+            flash('Você deve fazer logout primeiro.')
+            return redirect('/home')
+        # Caso não seja designer e esteja logado, redireciona para o painel
+        elif current_user.name and current_user.is_designer == False:
+            flash('Você deve sair do seu login de usuário primeiro.')
+            return redirect('/painel')
+        
+    except AttributeError:
+        pass
+    except:
+        return 'Erro Inesperado'
+
+    try:
+        if request.method == 'POST':
+            password = request.form.get('senha')
+            user_id = int(request.form.get('user_id'))
+            keypass = request.form.get('keypass')
+            keypass_id = int(request.form.get('keypass_id'))
+            if not password_validate(password):
+                flash('A senha deve conter entre 8 e 20 caracteres.')
+                return redirect(f'/recuperar-senha/nova-senha?id={request.form.get("keypass")}')
+            
+            # Verificando se o keypass fornecido confere com o id correspondente
+            user_check = get_request(f'/get-keypass-user/{keypass}')
+            if user_check.status_code == 200:
+                if user_check.text != 'null':
+                    keypass_data = Password_Recovery_Data(**loads(user_check.text))
+                    if keypass_data.user_id == user_id:
+                        hash = get_password_hash(password)
+                        send = User_Update(
+                            id=user_id,
+                            hash=hash
+                        )
+                        # Deletando keypass
+                        keypass_delete = get_request(f'/keypass-delete/{keypass_id}')
+                        if keypass_delete.status_code == 200:
+                            if loads(keypass_delete.text)['confirm'] == True:
+                                # Alterando a senha
+                                update_response = post_request('/user-update', send.json())
+                                if update_response.status_code == 200:
+                                    if loads(update_response.text)['confirm'] == True:
+                                        flash('Senha alterada com sucesso.')
+                                        return redirect('/entrar')
+                                    else:
+                                        flash('Algo deu errado.')
+                                        return redirect(f'/recuperar-senha')    
+                                else:
+                                    flash('Algo deu errado.')
+                                    return redirect(f'/recuperar-senha/nova-senha?id={request.form.get("keypass")}')
+                            else:
+                                flash('Link inválido')
+                                return redirect('/recuperar-senha')
+                        else:
+                            flash('Algo deu errado')
+                            return redirect(f'/recuperar-senha/nova-senha?id={request.form.get("keypass")}')    
+                    else:
+                        flash('Dados inválidos. Tente uma nova solicitação.')
+                        return redirect('/recuperar-senha')
+                else:
+                    flash('Usuário inválido')
+                    return redirect(f'/recuperar-senha/nova-senha?id={request.form.get("keypass")}')
+            else:
+                flash('Algo deu errado.')
+                return redirect(f'/recuperar-senha/nova-senha?id={request.form.get("keypass")}')
+        else:
+            if request.args.get('id'):
+                response = get_request(f'/get-keypass-user/{request.args.get("id")}')
+                if response.status_code == 200:
+                    if response.text != 'null':
+                        keypass_data = Password_Recovery_Data(**loads(response.text))
+                        if (datetime.now() - timedelta(minutes=30)) > keypass_data.key_datetime:
+                            flash('Link expirado')
+                            return redirect('/recuperar-senha')
+                    else:
+                        flash('Link inválido')
+                        return redirect('/entrar')
+                else:
+                    flash('Algo deu errado.')
+                    return redirect('/recuperar-senha')    
+                return render_template('client/nova-senha.html', user_id=keypass_data.user_id, keypass=keypass_data.key, keypass_id=keypass_data.id)
+            else:
+                flash('Algo deu errado.')
+                return redirect('/recuperar-senha')    
+    except Exception as error:
+        print(str(error))
+        flash('Algo deu errado.')
+        return redirect('/recuperar-senha')
+
 @app.route('/logout')
 @login_required
 def logout():
@@ -116,7 +277,8 @@ def logout():
 @designer_kick
 @login_required
 def painel():
-    
+    if current_user:
+        print('ok')
     permissions, user_data, tithe_list_data, balance = None, None, None, None
 
     permission_response = get_request('/get-permissions/painel')
@@ -231,7 +393,8 @@ def rol_de_membros_client():
         response = get_request('/user-list')
         if response.status_code == 200:
             if response.text != 'null':
-                userlist = loads(response.text)
+                userlist_response = loads(response.text)
+                userlist = sorted(userlist_response, key=lambda row:row['name'])
                 for i, user in enumerate(userlist):
                     userlist[i] = Simple_User(**user)
                 return render_template('client/rol-de-membros.html', userlist=userlist)
@@ -245,3 +408,4 @@ def rol_de_membros_client():
         print(str(error))
         flash('Algo deu errado')
         return redirect('/painel')
+

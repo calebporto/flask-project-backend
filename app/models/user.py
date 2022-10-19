@@ -5,7 +5,6 @@ from flask_login import UserMixin
 from app.models.basemodels import Get_User, User_Loader
 from app import login_manager
 from app.config import API_URL
-import requests
 from app.providers.functions import post_request
 
 
@@ -13,8 +12,9 @@ Base = declarative_base()
 
 @login_manager.user_loader
 def load_user(user_id):
+    print(user_id)
+    print('load_user')
     send = Get_User(id=user_id)
-    # response = requests.post(f'{API_URL}/get-user', send.json()).text
     response = post_request('/get-user', send.json()).text
     user = User_Loader(**loads(response))
     return User(user.id, user.name, user.email, user.hash, user.is_admin, user.is_treasurer, user.is_secretary, user.is_adviser, user.is_designer)

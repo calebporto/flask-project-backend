@@ -5,7 +5,6 @@ from flask_login import LoginManager
 app = Flask(__name__)
 app.config['SECRET_KEY'] = SECRET_KEY
 app.config['USE_SESSION_FOR_NEXT'] = USE_SESSION_FOR_NEXT  # Excluindo a variável 'next' da string de recirecionamento do login_required
-app.config['REMEMBER_COOKIE_DURATION'] = REMEMBER_COOKIE_DURATION
 app.config['REMEMBER_COOKIE_REFRESH_EACH_REQUEST'] = REMEMBER_COOKIE_REFRESH_EACH_REQUEST
 
 login_manager = LoginManager(app)

@@ -154,7 +154,8 @@ def entradas():
         try:
             response = get_request('/user-list')
             if response.status_code == 200:
-                userlist = loads(response.text)
+                userlist_response = loads(response.text)
+                userlist = sorted(userlist_response, key=lambda row:row['name'])
                 for i, user in enumerate(userlist):
                     userlist[i] = Simple_User(**user)
                 return render_template('admin/entradas.html', userlist=userlist)
@@ -360,7 +361,8 @@ def lista_de_membros():
     try:
         response = get_request('/user-list')
         if response.status_code == 200:
-            userlist = loads(response.text)
+            userlist_response = loads(response.text)
+            userlist = sorted(userlist_response, key=lambda row:row['name'])
             for i, user in enumerate(userlist):
                 userlist[i] = Simple_User(**user)
             return render_template('admin/lista-de-membros.html', userlist=userlist)
@@ -368,7 +370,8 @@ def lista_de_membros():
             flash('Algo deu errado')
             return redirect('/painel-administrativo')
     except Exception as error:
-        return HTTPException(400, detail=str(error))
+        print('erro', error)
+        flash('Algo deu errado')
 
 @app.route('/painel-administrativo/lista-de-membros/detalhes')
 @all_admin_permission
@@ -537,7 +540,8 @@ def alterar_cadastro():
         try:
             response = get_request('/user-list')
             if response.status_code == 200:
-                userlist = loads(response.text)
+                userlist_response = loads(response.text)
+                userlist = sorted(userlist_response, key=lambda row:row['name'])
                 for i, user in enumerate(userlist):
                     userlist[i] = Simple_User(**user)
                 return render_template('admin/alterar-cadastro.html', userlist=userlist)
@@ -611,7 +615,9 @@ def administradores():
             is_admin = False
             not_admin_list = get_request(f'/get-admin/{is_admin}/1')
             if not_admin_list.status_code == 200:
-                return not_admin_list.text
+                userlist_data = loads(not_admin_list.text)
+                userlist = sorted(userlist_data, key=lambda row:row['name'])
+                return json.dumps(userlist)
             else:
                 return []
         
@@ -638,7 +644,8 @@ def administradores():
             return redirect('/painel-administrativo/administradores')
 
         if admin_list.status_code == 200:
-            user_list = loads(admin_list.text)
+            userlist_response = loads(admin_list.text)
+            user_list = sorted(userlist_response, key=lambda row:row['name'])
             for i, user in enumerate(user_list):
                 data = Simple_User(**user)
                 user_list[i] = data
@@ -672,7 +679,9 @@ def tesoureiros():
             is_treasurer = False
             not_treasurer_list = get_request(f'/get-admin/{is_treasurer}/2')
             if not_treasurer_list.status_code == 200:
-                return not_treasurer_list.text
+                userlist_data = loads(not_treasurer_list.text)
+                userlist = sorted(userlist_data, key=lambda row:row['name'])
+                return json.dumps(userlist)
             else:
                 return []
         
@@ -698,7 +707,8 @@ def tesoureiros():
 
         # Lista de tesoureiros para o front end
         if treasurer_list.status_code == 200:
-            user_list = loads(treasurer_list.text)
+            userlist_response = loads(treasurer_list.text)
+            user_list = sorted(userlist_response, key=lambda row:row['name'])
             for i, user in enumerate(user_list):
                 data = Simple_User(**user)
                 user_list[i] = data
@@ -732,7 +742,9 @@ def secretarios():
             is_secretary = False
             not_secretary_list = get_request(f'/get-admin/{is_secretary}/3')
             if not_secretary_list.status_code == 200:
-                return not_secretary_list.text
+                userlist_data = loads(not_secretary_list.text)
+                userlist = sorted(userlist_data, key=lambda row:row['name'])
+                return json.dumps(userlist)
             else:
                 return []
         
@@ -758,7 +770,8 @@ def secretarios():
 
         # Lista de secretários para o front end
         if secretary_list.status_code == 200:
-            user_list = loads(secretary_list.text)
+            userlist_response = loads(secretary_list.text)
+            user_list = sorted(userlist_response, key=lambda row:row['name'])
             for i, user in enumerate(user_list):
                 data = Simple_User(**user)
                 user_list[i] = data
@@ -792,7 +805,9 @@ def conselho_fiscal():
             is_adviser = False
             not_adviser_list = get_request(f'/get-admin/{is_adviser}/4')
             if not_adviser_list.status_code == 200:
-                return not_adviser_list.text
+                userlist_data = loads(not_adviser_list.text)
+                userlist = sorted(userlist_data, key=lambda row:row['name'])
+                return json.dumps(userlist)
             else:
                 return []
         
@@ -818,7 +833,8 @@ def conselho_fiscal():
 
         # Lista de conselheiros fiscais para o front end
         if adviser_list.status_code == 200:
-            user_list = loads(adviser_list.text)
+            userlist_response = loads(adviser_list.text)
+            user_list = sorted(userlist_response, key=lambda row:row['name'])
             for i, user in enumerate(user_list):
                 data = Simple_User(**user)
                 user_list[i] = data
@@ -852,7 +868,9 @@ def designers():
             is_designer = False
             not_designer_list = get_request(f'/get-admin/{is_designer}/5')
             if not_designer_list.status_code == 200:
-                return not_designer_list.text
+                userlist_data = loads(not_designer_list.text)
+                userlist = sorted(userlist_data, key=lambda row:row['name'])
+                return json.dumps(userlist)
             else:
                 return []
         
@@ -878,7 +896,8 @@ def designers():
 
         # Lista de designers para o front end
         if designer_list.status_code == 200:
-            user_list = loads(designer_list.text)
+            userlist_response = loads(designer_list.text)
+            user_list = sorted(userlist_response, key=lambda row:row['name'])
             for i, user in enumerate(user_list):
                 data = Simple_User(**user)
                 user_list[i] = data

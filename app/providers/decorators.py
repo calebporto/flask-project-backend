@@ -71,7 +71,6 @@ def designer_kick(func):
         except:
             flash('Erro Inesperado')
             return redirect('/home')
-        print(args, kwargs)
         return func(*args, **kwargs)
     designer_check.__name__ = func.__name__
     return designer_check

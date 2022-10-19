@@ -163,3 +163,8 @@ def get_user_func(get_user):
         user_data.name = (user_data.name).title()
         user_data.address = (user_data.address).title()
         return user_data
+
+def password_validate(password):
+    if not password or len(password) < 8 or len(password) > 20:
+        return False
+    return True

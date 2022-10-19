@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from typing import Optional
 from pydantic import BaseModel
 
@@ -134,3 +134,9 @@ class Permission(BaseModel):
     permission8: Optional[bool]
     permission9: Optional[bool]
     permission10: Optional[bool]
+
+class Password_Recovery_Data(BaseModel):
+    id: Optional[int]
+    user_id: Optional[int]
+    key_datetime: Optional[datetime]
+    key: Optional[str]

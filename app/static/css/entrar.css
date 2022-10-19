@@ -100,6 +100,12 @@ div.container-menu, .menu {
     padding: 5px;
     font-size: small;
 }
+.form-box a {
+    color: white;
+}
+.form-box a:hover {
+    color: red;
+}
 @media (max-width: 768px) {
     body {
         background-image: url(/static/media/index/background-768px.png);
@@ -110,5 +116,8 @@ div.container-menu, .menu {
     .form-box {
         width: 80%;
         height: auto;
+    }
+    .form-box a:hover {
+        color: red;
     }
 }

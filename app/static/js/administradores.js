@@ -5,7 +5,7 @@ $(document).ready(function(){
             $(".add-adm").append("<div class='add-function'></div>");
             $(".add-function").append("<form class='form' action='/painel-administrativo/administradores' method='post'></form>");
             $(".form").append("<select name='add_id' id='select'></select>")
-            $("#select").append("<option value='' disabled selected>-- Selecione um usuário--</option>")
+            $("#select").append("<option value='' disabled selected required>-- Selecione um usuário--</option>")
             $.getJSON('/painel-administrativo/administradores?is_admin=1', function(dados){
                 if (dados) {
                     for (var i = 0; i < dados.length; i++) {
