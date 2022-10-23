@@ -1,4 +1,5 @@
 from datetime import date, datetime
+from optparse import Option
 from typing import Optional
 from pydantic import BaseModel
 
@@ -19,9 +20,11 @@ class Simple_User(BaseModel):
 class Get_User(BaseModel):
     id: int = -1
     email: str = ''
+    alternative_id: Optional[str]
 
 class User_Loader(BaseModel):
     id: Optional[int]
+    alternative_id: Optional[str]
     name: str
     email: str
     hash: str
@@ -33,10 +36,14 @@ class User_Loader(BaseModel):
 
 class UserAdd(BaseModel):
     user_to_del: Optional[int]
+    alternative_id: str
     name: str
     email: str
     hash: str
     is_admin: bool = False
+    is_secretary: bool = False
+    is_treasurer: bool = False
+    is_adviser: bool = False
     is_designer: bool = False
 
 class User_Data(BaseModel):
@@ -61,6 +68,7 @@ class User_With_Data(BaseModel):
 
 class User_Update(BaseModel):
     id: int
+    alternative_id: Optional[str]
     name: Optional[str]
     email: Optional[str]
     hash: Optional[str]

@@ -421,14 +421,17 @@ def detalhes():
 def lista_de_espera():
     if request.method == 'POST':
         if request.form.get('action') == 'accept':
+            alternative_id = new_alternative_id()
+            if not alternative_id:
+                flash('Não foi possível efetuar a solicitação.')
+                return redirect('/painel-administrativo/lista-de-espera')
             send = Add_User(
                 user=UserAdd(
                     user_to_del=int(request.form.get('user_to_del')),
+                    alternative_id=alternative_id, 
                     name=request.form.get('name').lower(),
                     email=request.form.get('email').lower(),
-                    hash=request.form.get('hash'),
-                    is_admin=False,
-                    is_designer=False
+                    hash=request.form.get('hash')
                 ), user_data=User_Data(
                     cep=request.form.get('cep'),
                     address=request.form.get('address').lower(),
@@ -481,10 +484,15 @@ def lista_de_espera():
 @login_required
 def adicionar_membro():
     if request.method == 'POST':
+        alternative_id = new_alternative_id()
+        if not alternative_id:
+            flash('Algo deu errado. Tente novamente mais tarde.')
+            return redirect('/painel-administrativo')
         address = f'{request.form.get("logradouro")} {request.form.get("numero")}, {request.form.get("bairro")}, {request.form.get("cidade")} - {request.form.get("uf")}'
         senha = get_password_hash(request.form.get('senha'))
         send = Add_User(
             user=UserAdd(
+                alternative_id=alternative_id,
                 name= request.form.get('nome').lower(), 
                 email= request.form.get('email').lower(), 
                 hash= senha

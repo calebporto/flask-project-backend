@@ -65,8 +65,9 @@ def entrar():
                 return redirect('/entrar')
             
             response_data = User_Loader(**loads(response.text))
+            print(response_data.alternative_id)
             user = User(
-                response_data.id, response_data.name, 
+                response_data.id, response_data.alternative_id, response_data.name, 
                 response_data.email, response_data.hash, 
                 response_data.is_admin, response_data.is_treasurer, 
                 response_data.is_secretary, response_data.is_adviser, response_data.is_designer)
@@ -110,7 +111,8 @@ def entrar():
             
         except AttributeError:
             return render_template('client/entrar.html')
-        except:
+        except Exception as error:
+            print(str(error))
             return 'Erro Inesperado'
 
 @app.route('/recuperar-senha')
@@ -207,16 +209,18 @@ def nova_senha():
                 if user_check.text != 'null':
                     keypass_data = Password_Recovery_Data(**loads(user_check.text))
                     if keypass_data.user_id == user_id:
-                        hash = get_password_hash(password)
-                        send = User_Update(
-                            id=user_id,
-                            hash=hash
-                        )
                         # Deletando keypass
                         keypass_delete = get_request(f'/keypass-delete/{keypass_id}')
                         if keypass_delete.status_code == 200:
                             if loads(keypass_delete.text)['confirm'] == True:
-                                # Alterando a senha
+                                # Alterando a senha e o alternative_id
+                                hash = get_password_hash(password)
+                                alternative_id = new_alternative_id()
+                                send = User_Update(
+                                    id=user_id,
+                                    alternative_id=alternative_id,
+                                    hash=hash
+                                )
                                 update_response = post_request('/user-update', send.json())
                                 if update_response.status_code == 200:
                                     if loads(update_response.text)['confirm'] == True:
@@ -277,8 +281,7 @@ def logout():
 @designer_kick
 @login_required
 def painel():
-    if current_user:
-        print('ok')
+    
     permissions, user_data, tithe_list_data, balance = None, None, None, None
 
     permission_response = get_request('/get-permissions/painel')
@@ -294,6 +297,7 @@ def painel():
                 tithe_list = get_request(f'/tithe-list/365/{current_user.id}/2')
                 tithe_list_data = get_title_list(tithe_list)
         else:
+            print(permission_response.text)
             flash('Erro no carregamento dos dados')
     else:
         flash('Erro no carregamento dos dados')

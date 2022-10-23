@@ -1,9 +1,10 @@
-from app.models.basemodels import Permission, Tithe_List, User_With_Data
+from app.models.basemodels import Get_User, Permission, Tithe_List, User_With_Data
 from flask import flash, request
 from json import loads
 import requests
 import os
 from datetime import date
+from secrets import token_hex
 
 API_URL = os.environ["API_URL"]
 API_KEY = os.environ["API_KEY"]
@@ -168,3 +169,24 @@ def password_validate(password):
     if not password or len(password) < 8 or len(password) > 20:
         return False
     return True
+
+def alternative_id_generator():
+    ''' Gera um alternative_id aleatório'''
+    return token_hex(16)
+
+def new_alternative_id():
+    ''' Gera um alternative_id aleatório com a função alternative_id_generator,
+        consulta se já existe usuário com o alternative_id gerado, e caso não haja,
+        retorna o alternative_id gerado'''
+
+    alternative_id = alternative_id_generator()
+    send = Get_User(
+        alternative_id=alternative_id
+    )
+    response = post_request('/get-user', send.json())
+    if response.status_code != 200:
+        return None
+    else:
+        if response.text != 'null':
+            new_alternative_id()
+        return alternative_id
