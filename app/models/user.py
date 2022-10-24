@@ -1,4 +1,5 @@
 from json import loads
+from flask import redirect
 from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy.orm import declarative_base
 from flask_login import UserMixin
@@ -13,6 +14,8 @@ Base = declarative_base()
 def load_user(user_id):
     send = Get_User(alternative_id=user_id)
     response = post_request('/get-user', send.json()).text
+    if response == 'null':
+        return redirect('/logout')
     user = User_Loader(**loads(response))
     return User(user.id, user.alternative_id, user.name, user.email, user.hash, user.is_admin, user.is_treasurer, user.is_secretary, user.is_adviser, user.is_designer)
 
@@ -43,6 +46,7 @@ class User(Base, UserMixin):
         self.is_designer = is_designer
 
     def get_id(self):
+        print('ok')
         return str(self.alternative_id)
 
     def __repr__(self):
